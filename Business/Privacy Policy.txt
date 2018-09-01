@@ -1,0 +1,25 @@
+This is a simple privacy policy because we are doing our best to limit what information we keep.
+
+The app works by uploading your content to our server, where we then send it forward to your
+partner. Once we've verified your partner has received the message, it is deleted from our server.
+All content that you create within the app is stored only on your device and may be erased by you
+in case the app begins to use too much space.
+
+We store your Name and email address in order to identify you. And we store statistical data
+based on your usage in order to improve the app.
+
+Statistical data includes (And this will eventually be information you can see in the app):
+   - # of messages sent & received (I repeat, we do not save your messages any longer than needed to ensure delivery)
+   - That's all I have in mind right now, so update this if it ever changes.
+
+We do not share any of this information with any third parties. It is only used for displaying to you
+for fun, and for us to understand how you use our app so that we may improve it.
+
+
+---------------DISCLAIMER-------------------------
+Prototype will not use android push notifications... So this means it will probably cause battery drain
+by polling the server periodically. Privacy policy will have to change when we're forced to give all your
+data to Google in order to support push notifications...
+
+terms of use are here... But I can't read the legaleze...
+https://firebase.google.com/terms/data-processing-terms?authuser=0
