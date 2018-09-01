@@ -55,7 +55,8 @@
  */
 
 var MESSAGE_SENDING = "sending...";
-var MESSAGE_SENT    = "sent";
+var MESSAGE_SENT    = "not seen";
+var MESSAGE_SEEN    = "seen"; // TODO: implement usage of this.
 var SERVER_URL      = "http://192.168.0.33/message"
 
 var f7 = new Framework7({
@@ -179,6 +180,9 @@ $$('.send-link').on('click', function () {
     // return if empty message
     if (!text.length) return;
   
+    // TODO: Get last message and remove the message from it
+    // so every single message doesn't say "sent"
+
     // Clear area
     messagebar.clear();
   
@@ -217,8 +221,31 @@ function receiveMessage() {
     responseInProgress = false;
 }
 
+/**
+ * Sets up the firebase cloud messaging listener
+ * This will respond when a message is received
+ */
 function setupFCMPlugin() {
-    
+    alert("Setting up FCM");
+    // alert(FCMPlugin ? "plugin found" : "no plugin");
+    // alert("boop");
+    FCMPlugin.getToken(function(token){
+        alert(token);
+    }, function (err) {
+        alert(err);
+    });
+
+    //FCMPlugin.onNotification( onNotificationCallback(data), successCallback(msg), errorCallback(err) )
+    //Here you define your application behaviour based on the notification data.
+    FCMPlugin.onNotification(function(data){
+        if(data.wasTapped){
+            //Notification was received on device tray and tapped by the user.
+            alert( JSON.stringify(data) );
+        }else{
+            //Notification was received in foreground. Maybe the user needs to be notified.
+            alert( JSON.stringify(data) );
+        }
+    });
 }
 
 var app = {
