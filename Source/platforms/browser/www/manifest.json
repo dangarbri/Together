@@ -1,0 +1,11 @@
+{
+  "background_color": "#FFF",
+  "display": "standalone",
+  "name": "Together",
+  "short_name": "Together",
+  "version": "com.dangarbri.together",
+  "description": "Hello World sample application that responds to the deviceready event.",
+  "author": "Daniel Briseno",
+  "icons": [],
+  "start_url": "index.html"
+}
