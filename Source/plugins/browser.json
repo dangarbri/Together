@@ -1,49 +1,52 @@
 {
-  "prepare_queue": {
-    "installed": [],
-    "uninstalled": []
-  },
-  "config_munge": {
-    "files": {}
-  },
-  "installed_plugins": {
-    "cordova-plugin-battery-status": {
-      "PACKAGE_NAME": "com.dangarbri.together"
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
     },
-    "cordova-plugin-camera": {
-      "PACKAGE_NAME": "com.dangarbri.together"
+    "config_munge": {
+        "files": {}
     },
-    "cordova-plugin-device": {
-      "PACKAGE_NAME": "com.dangarbri.together"
+    "installed_plugins": {
+        "cordova-plugin-battery-status": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-camera": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-fcm": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-geolocation": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-globalization": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-vibration": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-media-capture": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        }
     },
-    "cordova-plugin-dialogs": {
-      "PACKAGE_NAME": "com.dangarbri.together"
-    },
-    "cordova-plugin-fcm": {
-      "PACKAGE_NAME": "com.dangarbri.together"
-    },
-    "cordova-plugin-geolocation": {
-      "PACKAGE_NAME": "com.dangarbri.together"
-    },
-    "cordova-plugin-globalization": {
-      "PACKAGE_NAME": "com.dangarbri.together"
-    },
-    "cordova-plugin-inappbrowser": {
-      "PACKAGE_NAME": "com.dangarbri.together"
-    },
-    "cordova-plugin-network-information": {
-      "PACKAGE_NAME": "com.dangarbri.together"
-    },
-    "cordova-plugin-vibration": {
-      "PACKAGE_NAME": "com.dangarbri.together"
+    "dependent_plugins": {
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "com.dangarbri.together"
+        }
     }
-  },
-  "dependent_plugins": {
-    "cordova-plugin-compat": {
-      "PACKAGE_NAME": "com.dangarbri.together"
-    },
-    "cordova-plugin-file": {
-      "PACKAGE_NAME": "com.dangarbri.together"
-    }
-  }
 }
