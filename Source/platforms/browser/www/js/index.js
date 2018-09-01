@@ -57,7 +57,14 @@
 var MESSAGE_SENDING = "sending...";
 var MESSAGE_SENT    = "not seen";
 var MESSAGE_SEEN    = "seen"; // TODO: implement usage of this.
-var SERVER_URL      = "http://192.168.0.33/message"
+var SERVER_MESSAGE_ENDPOINT  = "http://192.168.0.33/message"
+var SERVER_REGISTER_ENDPOINT = "http://192.168.0.33/login"
+
+// TODO remove this, for debug only right now before implementing users
+var USERS = {
+    Daniel: 1,
+    Leah: 3
+}
 
 var f7 = new Framework7({
     root: '#app'
@@ -138,6 +145,22 @@ function markMessageSent(messageDiv) {
 }
 
 /**
+ * Mark all "not read" messages as read (by removing the not read element)
+ */
+function markRead() {
+    var footers = document.getElementsByClassName("message-footer");
+    while (footers.length > 0) {
+        if (footers.length == 1) {
+            footers[0].textContent = MESSAGE_SEEN;
+            break;
+        } else {
+            footers[0].remove();
+            footers = document.getElementsByClassName("message-footer");
+        }
+    }
+}
+
+/**
  * Returns the div for the last message added to the list.
  */
 function getLastMessage() {
@@ -155,13 +178,13 @@ function postMessage(messageDiv, text) {
     // TODO: encrypt message eventually.
     f7.request({
         method: 'POST',
-        url: SERVER_URL,
-        data: {message: text},
-        dataType: 'json',
+        url: SERVER_MESSAGE_ENDPOINT,
+        data: {message: text, to: USERS.Daniel},
         // On success mark the message as sent
         success: function () {
-            markMessageSent(messageDiv);
-            alert("SUCCESS");
+            if (messageDiv) {
+                markMessageSent(messageDiv);
+            }
         },
         // TODO: add functionality to make user retry sending
         // don't bother manually retrying, could just be no data connection
@@ -196,29 +219,88 @@ $$('.send-link').on('click', function () {
     var messageDiv = getLastMessage();
     postMessage(messageDiv, text);
 });
-  
-  // Dummy response
-function receiveMessage() {
-    responseInProgress = true;
 
-    // Show typing indicator
-    messages.showTyping({
-        header: person.name + ' is typing',
-        avatar: person.avatar
-    });
-
+function displayReceivedMessage(message) {
     // Add received dummy message
     messages.addMessage({
-        text: answer,
-        type: 'received',
-        name: person.name,
-        avatar: person.avatar
+        text: message,
+        type: 'received'
+        // name: person.name,
+        // avatar: person.avatar
     });
+}
 
-    // Hide typing indicator
-    messages.hideTyping();
+/**
+ * Registers the device with the server to be able to send
+ * messages directly to it.
+ * @param token 
+ */
+// TODO should probably have a getter for this but I'm too lazy while prototyping.
+var userToken; // READ ONLY variable for other functions to see the current token
+function registerDevice(token) {
+    console.log("Registering device with together servers");
+    // Set token we're registering with
+    userToken = token;
+    f7.request({
+        method: 'POST',
+        url: SERVER_REGISTER_ENDPOINT,
+        data: {user: USERS.Daniel, token: token},
+        // On success mark the message as sent
+        success: function () {
+            console.log("Device is registered with together server");
+        },
+        // TODO: add functionality to make user retry sending
+        // don't bother manually retrying, could just be no data connection
+        error: function (request) {
+            console.log(request.status);
+            console.log(request.statusText);
+            console.log(request.responseText);
+            alert("Failed to register device on server, tell Daniel it's broken");
+        }
+    })
+}
 
-    responseInProgress = false;
+function setupToken() {
+    // I'm not sure how tokens work, so I'm going with we try to get it
+    // Then documentation says this may return null if there's no token yet.
+    // So I'm going to check if the token is null, and if it is, then we'll set a timer
+    // to fire to check it again.
+    FCMPlugin.getToken(function(token) {
+        if (!token) {
+            setTimeout(setupToken, 500);
+        } else {
+            registerDevice(token);
+        }
+    }, function (err) {
+        alert("Failed to get device token, app won't work. Tell Daniel FCM Plugin isn't working");
+    });
+}
+
+/**
+ * Request messages from the server
+ * Intended to be called when notification is received or app is opened
+ */
+function refreshMessages() {
+    f7.request({
+        method: 'GET',
+        url: SERVER_MESSAGE_ENDPOINT,
+        data: {user: USERS.Daniel},
+        dataType: 'json',
+        // On success mark the message as sent
+        success: function (messages) {
+            messages.forEach(function (message) {
+                displayReceivedMessage(message.message);
+            });
+        },
+        // TODO: add functionality to make user retry sending
+        // don't bother manually retrying, could just be no data connection
+        error: function (request) {
+            console.log(request.status);
+            console.log(request.statusText);
+            console.log(request.responseText);
+            alert("Failed to retrieve message");
+        }
+    })
 }
 
 /**
@@ -226,24 +308,24 @@ function receiveMessage() {
  * This will respond when a message is received
  */
 function setupFCMPlugin() {
-    alert("Setting up FCM");
-    // alert(FCMPlugin ? "plugin found" : "no plugin");
-    // alert("boop");
-    FCMPlugin.getToken(function(token){
-        alert(token);
-    }, function (err) {
-        alert(err);
+    FCMPlugin.onTokenRefresh(function(token) {
+        if (token != userToken) {
+            registerDevice(token);
+        }
     });
 
-    //FCMPlugin.onNotification( onNotificationCallback(data), successCallback(msg), errorCallback(err) )
-    //Here you define your application behaviour based on the notification data.
+    setupToken();
+
+    // Here you define your application behaviour based on the notification data.
+    // TODO display message content
     FCMPlugin.onNotification(function(data){
-        if(data.wasTapped){
-            //Notification was received on device tray and tapped by the user.
-            alert( JSON.stringify(data) );
-        }else{
-            //Notification was received in foreground. Maybe the user needs to be notified.
-            alert( JSON.stringify(data) );
+        console.log(JSON.stringify(data));
+        // alert(JSON.stringify(data));
+        if (data.action == "receive") {
+            refreshMessages();
+        } else if (data.action == "read") {
+            alert("marking messages as read");
+            markRead();
         }
     });
 }
@@ -259,6 +341,7 @@ var app = {
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
+        document.addEventListener('resume', refreshMessages);
     },
     // deviceready Event Handler
     //
@@ -267,6 +350,7 @@ var app = {
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
         setupFCMPlugin();
+        refreshMessages();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {

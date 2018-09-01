@@ -42,6 +42,9 @@
     },
     "phonegap-plugin-push": {
       "PACKAGE_NAME": "com.dangarbri.together"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.dangarbri.together"
     }
   },
   "dependent_plugins": {

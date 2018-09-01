@@ -24,7 +24,6 @@ var fs = require('fs');
 var path = require('path');
 var shell = require('shelljs');
 var events = require('cordova-common').events;
-
 function GenericBuilder (projectDir) {
     this.root = projectDir || path.resolve(__dirname, '../../..');
     this.binDirs = {
