@@ -54,8 +54,9 @@
     
  */
 
-var MESSAGE_SENDING = "sending..."
-var MESSAGE_SENT    = "sent"
+var MESSAGE_SENDING = "sending...";
+var MESSAGE_SENT    = "sent";
+var SERVER_URL      = "http://192.168.0.33/message"
 
 var f7 = new Framework7({
     root: '#app'
@@ -143,6 +144,31 @@ function getLastMessage() {
     var lastMessage = messageList[messageList.length-1];
     return lastMessage;
 }
+
+/**
+ * Posts message to the server. Once message is posted the div is updated to say "sent"
+ * @param messageDiv - div created by adding the message being sent
+ * @param text - text to send in the message
+ */
+function postMessage(messageDiv, text) {
+    // TODO: encrypt message eventually.
+    f7.request({
+        method: 'POST',
+        url: SERVER_URL,
+        data: {message: text},
+        dataType: 'json',
+        // On success mark the message as sent
+        success: function () {
+            markMessageSent(messageDiv);
+            alert("SUCCESS");
+        },
+        // TODO: add functionality to make user retry sending
+        // don't bother manually retrying, could just be no data connection
+        error: function (data) {
+            console.log(data);
+        }
+    })
+}
   
   // Response flag
   var responseInProgress = false;
@@ -164,7 +190,7 @@ $$('.send-link').on('click', function () {
     
     // Get message div that was created
     var messageDiv = getLastMessage();
-    // TODO send message to server and mark message as sent
+    postMessage(messageDiv, text);
 });
   
   // Dummy response
@@ -191,6 +217,10 @@ function receiveMessage() {
     responseInProgress = false;
 }
 
+function setupFCMPlugin() {
+    
+}
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -209,16 +239,12 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+        setupFCMPlugin();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
         console.log('Received Event: ' + id);
     }
 };
+
+app.initialize();

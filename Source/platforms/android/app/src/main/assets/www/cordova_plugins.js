@@ -351,6 +351,14 @@ module.exports = [
     "file": "plugins/cordova-plugin-media-capture/www/android/init.js",
     "pluginId": "cordova-plugin-media-capture",
     "runs": true
+  },
+  {
+    "id": "phonegap-plugin-push.PushNotification",
+    "file": "plugins/phonegap-plugin-push/www/push.js",
+    "pluginId": "phonegap-plugin-push",
+    "clobbers": [
+      "PushNotification"
+    ]
   }
 ];
 module.exports.metadata = 
@@ -365,7 +373,8 @@ module.exports.metadata =
   "cordova-plugin-globalization": "1.0.9",
   "cordova-plugin-inappbrowser": "1.7.2",
   "cordova-plugin-fcm": "2.1.2",
-  "cordova-plugin-media-capture": "1.4.3"
+  "cordova-plugin-media-capture": "1.4.3",
+  "phonegap-plugin-push": "2.1.3"
 };
 // BOTTOM OF METADATA
 });

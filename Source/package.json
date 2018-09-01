@@ -5,9 +5,15 @@
   "cordova": {
     "platforms": [
       "browser"
-    ]
+    ],
+    "plugins": {
+      "phonegap-plugin-push": {
+        "FCM_VERSION": "11.6.2"
+      }
+    }
   },
   "dependencies": {
-    "cordova-browser": "~5.0.4"
+    "cordova-browser": "~5.0.4",
+    "phonegap-plugin-push": "^2.1.3"
   }
 }
