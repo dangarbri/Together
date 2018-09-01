@@ -37,6 +37,26 @@
 //     // ... other parameters
 //   });
 
+/** // API ITEMS TO REMEMBER
+    // Show typing indicator
+    messages.showTyping({
+        header: person.name + ' is typing',
+        avatar: person.avatar
+    });
+
+    // Add received dummy message
+    messages.addMessage({
+        text: answer,
+        type: 'received',
+        name: person.name,
+        avatar: person.avatar
+    });
+    
+ */
+
+var MESSAGE_SENDING = "sending..."
+var MESSAGE_SENT    = "sent"
+
 var f7 = new Framework7({
     root: '#app'
 });
@@ -44,6 +64,8 @@ var f7 = new Framework7({
 var mainView = f7.views.create('.view-main');
 
 var $$ = Dom7;
+
+var messageWindow = document.getElementById("js-message-window");
 
 // Init Messages
 var messages = f7.messages.create({
@@ -85,18 +107,48 @@ var messages = f7.messages.create({
       if (!nextMessage || nextMessage.type !== message.type || nextMessage.name !== message.name) return true;
       return false;
     }
-  });
-  
-  // Init Messagebar
-  var messagebar = f7.messagebar.create({
-    el: '.messagebar'
-  });
+});
+
+// Interval that runs when message bar is focused to try to 
+// scroll the screen to the bottom
+var gScrollCheck;
+var messagebar = f7.messagebar.create({
+    el: '.messagebar',
+    on: {
+        focus: function () {
+            gScrollCheck = setInterval(function () {
+                messageWindow.scrollTop = messageWindow.scrollHeight;
+            }, 200);
+        },
+        blur: function () {
+            clearInterval(gScrollCheck);
+        }
+    }
+});
+
+/**
+ * Mark the given html message as sent.
+ * Input is the div with class="message"
+ */
+function markMessageSent(messageDiv) {
+    var footer = messageDiv.getElementsByClassName("message-footer")[0];
+    footer.textContent = MESSAGE_SENT;
+}
+
+/**
+ * Returns the div for the last message added to the list.
+ */
+function getLastMessage() {
+    var messageList = messages.el.getElementsByClassName("message");
+    var lastMessage = messageList[messageList.length-1];
+    return lastMessage;
+}
   
   // Response flag
   var responseInProgress = false;
   
-  // Send Message
-  $$('.send-link').on('click', function () {
+// Send Message
+$$('.send-link').on('click', function () {
     var text = messagebar.getValue().replace(/\n/g, '<br>').trim();
     // return if empty message
     if (!text.length) return;
@@ -104,100 +156,69 @@ var messages = f7.messages.create({
     // Clear area
     messagebar.clear();
   
-    // Return focus to area
-    messagebar.focus();
-  
     // Add message to messages
     messages.addMessage({
       text: text,
+      footer: MESSAGE_SENDING
     });
-  
-    if (responseInProgress) return;
-    // Receive dummy message
-    receiveMessage();
-  });
+    
+    // Get message div that was created
+    var messageDiv = getLastMessage();
+    // TODO send message to server and mark message as sent
+});
   
   // Dummy response
-  var answers = [
-    'Yes!',
-    'No',
-    'Hm...',
-    'I am not sure',
-    'And what about you?',
-    'May be ;)',
-    'Lorem ipsum dolor sit amet, consectetur',
-    'What?',
-    'Are you sure?',
-    'Of course',
-    'Need to think about it',
-    'Amazing!!!'
-  ]
-  var people = [
-    {
-      name: 'Kate Johnson',
-      avatar: 'http://lorempixel.com/100/100/people/9'
-    },
-    {
-      name: 'Blue Ninja',
-      avatar: 'http://lorempixel.com/100/100/people/7'
-    }
-  ];
-  function receiveMessage() {
+function receiveMessage() {
     responseInProgress = true;
-    setTimeout(function () {
-      // Get random answer and random person
-      var answer = answers[Math.floor(Math.random() * answers.length)];
-      var person = people[Math.floor(Math.random() * people.length)];
-  
-      // Show typing indicator
-      messages.showTyping({
+
+    // Show typing indicator
+    messages.showTyping({
         header: person.name + ' is typing',
         avatar: person.avatar
-      });
-  
-      setTimeout(function () {
-        // Add received dummy message
-        messages.addMessage({
-          text: answer,
-          type: 'received',
-          name: person.name,
-          avatar: person.avatar
-        });
-        // Hide typing indicator
-        messages.hideTyping();
-        responseInProgress = false;
-      }, 4000);
-    }, 1000);
-  }
+    });
 
-// var app = {
-//     // Application Constructor
-//     initialize: function() {
-//         this.bindEvents();
-//     },
-//     // Bind Event Listeners
-//     //
-//     // Bind any events that are required on startup. Common events are:
-//     // 'load', 'deviceready', 'offline', and 'online'.
-//     bindEvents: function() {
-//         document.addEventListener('deviceready', this.onDeviceReady, false);
-//     },
-//     // deviceready Event Handler
-//     //
-//     // The scope of 'this' is the event. In order to call the 'receivedEvent'
-//     // function, we must explicitly call 'app.receivedEvent(...);'
-//     onDeviceReady: function() {
-//         app.receivedEvent('deviceready');
-//     },
-//     // Update DOM on a Received Event
-//     receivedEvent: function(id) {
-//         var parentElement = document.getElementById(id);
-//         var listeningElement = parentElement.querySelector('.listening');
-//         var receivedElement = parentElement.querySelector('.received');
+    // Add received dummy message
+    messages.addMessage({
+        text: answer,
+        type: 'received',
+        name: person.name,
+        avatar: person.avatar
+    });
 
-//         listeningElement.setAttribute('style', 'display:none;');
-//         receivedElement.setAttribute('style', 'display:block;');
+    // Hide typing indicator
+    messages.hideTyping();
 
-//         console.log('Received Event: ' + id);
-//     }
-// };
+    responseInProgress = false;
+}
+
+var app = {
+    // Application Constructor
+    initialize: function() {
+        this.bindEvents();
+    },
+    // Bind Event Listeners
+    //
+    // Bind any events that are required on startup. Common events are:
+    // 'load', 'deviceready', 'offline', and 'online'.
+    bindEvents: function() {
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+    },
+    // deviceready Event Handler
+    //
+    // The scope of 'this' is the event. In order to call the 'receivedEvent'
+    // function, we must explicitly call 'app.receivedEvent(...);'
+    onDeviceReady: function() {
+        app.receivedEvent('deviceready');
+    },
+    // Update DOM on a Received Event
+    receivedEvent: function(id) {
+        var parentElement = document.getElementById(id);
+        var listeningElement = parentElement.querySelector('.listening');
+        var receivedElement = parentElement.querySelector('.received');
+
+        listeningElement.setAttribute('style', 'display:none;');
+        receivedElement.setAttribute('style', 'display:block;');
+
+        console.log('Received Event: ' + id);
+    }
+};

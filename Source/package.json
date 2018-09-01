@@ -1,0 +1,13 @@
+{
+  "name": "com.dangarbri.together",
+  "version": "1.0.0",
+  "displayName": "Together",
+  "cordova": {
+    "platforms": [
+      "browser"
+    ]
+  },
+  "dependencies": {
+    "cordova-browser": "~5.0.4"
+  }
+}
