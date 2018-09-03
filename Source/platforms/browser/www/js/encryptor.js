@@ -20,7 +20,11 @@ function decryptMessage(cipherJson) {
 }
 
 function promptSuccess(key) {
-    localStorage.setItem(KEY_PHRASE, key);
+    if (key) {
+        localStorage.setItem(KEY_PHRASE, key);
+    } else {
+        promptForKey();
+    }
 }
 
 /**

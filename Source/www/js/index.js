@@ -275,7 +275,7 @@ function setupToken() {
             registerDevice(token);
         }
     }, function (err) {
-        alert("Failed to get device token, app won't work. Tell Daniel FCM Plugin isn't working");
+        console.log("Failed to get device token, app won't work. Tell Daniel FCM Plugin isn't working");
     });
 }
 
@@ -381,8 +381,15 @@ var app = {
                 messages.addMessage(msgs[i]);
             }
         })
-        setupFCMPlugin();
-        encryptorInit();
+
+        // Originally I intended for this to just be a getter
+        // But I ended up implementing it to handle all the login stuff.
+        // so the callback can run init and the user won't get past
+        // everything unless they login and pair with a partner
+        Auth.checkLoginStatus(function () {
+            setupFCMPlugin();
+            encryptorInit();
+        });
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
