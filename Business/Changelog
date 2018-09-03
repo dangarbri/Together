@@ -1,0 +1,6 @@
+v 0.1.0
+- Base app
+- Contains messaging, encryption, authentication, basic stuff
+
+v 0.1.1
+- Added "show typing" feature to see when paired device is typing
