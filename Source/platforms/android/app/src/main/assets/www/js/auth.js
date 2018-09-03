@@ -1,10 +1,5 @@
 var Auth = {};
 (function (api) {
-    var SERVER_LOGIN_ENDPOINT  = "http://192.168.0.33/login"
-    var SERVER_LOGOUT_ENDPOINT = "http://192.168.0.33/logout"
-    var SERVER_PING_ENDPOINT = "http://192.168.0.33/device"
-    var SERVER_PAIRING_ENDPOINT = "http://192.168.0.33/pair"
-
     api.loginCallback = null; // Function to call once user is logged in
     api.pairing = null;
     api.statusCheck = null;
@@ -15,14 +10,11 @@ var Auth = {};
 
     }
 
-    api.login = function (callback) {
+    api.login = function () {
         // alert("logging in");
         var loginEl = document.getElementById('js-login');
         api.loginScreen = f7.loginScreen.create({el: loginEl});
         api.loginScreen.open(true);
-
-        // Set parameters
-        api.loginCallback = callback;
 
         var submit = document.getElementById('js-login-button');
         submit.addEventListener('click', api.sendLogin);
@@ -56,9 +48,10 @@ var Auth = {};
             // TODO clean this up... it's a bunch of different things that
             // happen based on being logged in vs being paired
             success: function (data) {
+                // alert(JSON.stringify(data));
                 // if not logged in, request login
                 if (!data.loggedIn) {
-                    api.login(api.loginCallback);
+                    api.login();
                     return; // end here
                 } else {
                     // We're logged in. Close login screen

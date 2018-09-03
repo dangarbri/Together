@@ -57,15 +57,9 @@
 var MESSAGE_SENDING = "sending..."; // Text to show while message is waiting to be sent to server
 var MESSAGE_SENT    = "not seen"; // text to show before message is read
 var MESSAGE_SEEN    = "seen"; // text to show when message is read by peer
-var SERVER_MESSAGE_ENDPOINT  = "http://192.168.0.33/message"; // Endpoint send/receive messages
-var SERVER_REGISTER_ENDPOINT = "http://192.168.0.33/device";   // Endpoint to login
 var MAX_SAVED_MESSAGES = 100; // Max # of messages to save to device
-
-// TODO remove this, for debug only right now before implementing users
-var USERS = {
-    Daniel: 1,
-    Leah: 3
-}
+var TYPING_TIMEOUT = 5000;
+var TYPING_PING_INTERVAL = 3000;
 
 var f7 = new Framework7({
     root: '#app'
@@ -122,6 +116,7 @@ var messages = f7.messages.create({
 // Interval that runs when message bar is focused to try to 
 // scroll the screen to the bottom
 var gScrollCheck;
+var gIsTyping = false;
 var messagebar = f7.messagebar.create({
     el: '.messagebar',
     on: {
@@ -129,17 +124,35 @@ var messagebar = f7.messagebar.create({
             gScrollCheck = setInterval(function () {
                 messageWindow.scrollTop = messageWindow.scrollHeight;
             }, 200);
+            pingTyping();
+            gIsTyping = true;
         },
         blur: function () {
             clearInterval(gScrollCheck);
+            gIsTyping = false;
         },
     }
 });
-messagebar.el.onkeypress = function (e) {
-    if (e.key == "Enter") {
-        var btn = document.getElementById('js-send-btn');
-        btn.click();
-        return false;
+// messagebar.el.onkeypress = function (e) {
+//     if (e.key == "Enter") {
+//         var btn = document.getElementById('js-send-btn');
+//         btn.click();
+//         return false;
+//     }
+// }
+
+var gAreTheyTyping = false;
+function showTyping() {
+    if (!gAreTheyTyping) {
+        messages.showTyping();
+        gAreTheyTyping = true;
+    }
+}
+
+function hideTyping() {
+    if (gAreTheyTyping) {
+        gAreTheyTyping = false;
+        messages.hideTyping();
     }
 }
 
@@ -187,7 +200,7 @@ function postMessage(messageDiv, text) {
     f7.request({
         method: 'POST',
         url: SERVER_MESSAGE_ENDPOINT,
-        data: {message: encryptedMessage, to: USERS.Daniel},
+        data: {message: encryptedMessage},
         // On success mark the message as sent
         success: function () {
             if (messageDiv) {
@@ -290,14 +303,18 @@ function setupToken() {
  * Request messages from the server
  * Intended to be called when notification is received or app is opened
  */
+var gTypingTimeout = null;
 function refreshMessages() {
     f7.request({
         method: 'GET',
         url: SERVER_MESSAGE_ENDPOINT,
-        data: {user: USERS.Daniel},
         dataType: 'json',
         // On success mark the message as sent
         success: function (msgs) {
+            if (gTypingTimeout) {
+                clearTimeout(gTypingTimeout);
+                hideTyping();
+            }
             msgs.forEach(function (message) {
                 console.log(message.message);
                 var decryptedMessage = decryptMessage(message.message);
@@ -334,11 +351,20 @@ function setupFCMPlugin() {
     // TODO display message content
     FCMPlugin.onNotification(function(data){
         console.log(JSON.stringify(data));
+        // alert("Message received, see console");
         // alert(JSON.stringify(data));
         if (data.action == "receive") {
             refreshMessages();
         } else if (data.action == "read") {
             markRead();
+        } else if (data.action == "typing") {
+            showTyping();
+            if (gTypingTimeout) {
+                clearTimeout(gTypingTimeout);
+            }
+            gTypingTimeout = setTimeout(function () {
+                hideTyping();
+            }, TYPING_TIMEOUT); // Hide typing after ~7.5 seconds, or if a message was received
         }
     });
 }
@@ -362,6 +388,27 @@ function serializeMessages() {
         }
     }
     return data;
+}
+
+/**
+ * Just ping the server's typing endpoint, if we're authenticated it will send
+ * a notification to the other user that we're typing
+ */
+var gPingTimeout = null;
+function pingTyping() {
+    f7.request({
+        method: 'POST',
+        url: SERVER_TYPING_ENDPOINT
+    })
+    if (gPingTimeout) {
+        clearTimeout(gPingTimeout);
+    }
+    // if still typing after 5 seconds, ping again
+    gPingTimeout = setTimeout(function () {
+        if (gIsTyping) {
+            pingTyping();
+        }
+    }, TYPING_PING_INTERVAL)
 }
 
 var app = {
@@ -392,6 +439,7 @@ var app = {
         // so the callback can run init and the user won't get past
         // everything unless they login and pair with a partner
         Auth.checkLoginStatus(function () {
+            // alert("Login callback called");
             setupFCMPlugin();
             encryptorInit();
         });

@@ -1,10 +1,5 @@
 var Auth = {};
 (function (api) {
-    var SERVER_LOGIN_ENDPOINT  = "https://dangarbri.com/login"
-    var SERVER_LOGOUT_ENDPOINT = "https://dangarbri.com/logout"
-    var SERVER_PING_ENDPOINT = "https://dangarbri.com/device"
-    var SERVER_PAIRING_ENDPOINT = "https://dangarbri.com/pair"
-
     api.loginCallback = null; // Function to call once user is logged in
     api.pairing = null;
     api.statusCheck = null;
@@ -53,7 +48,7 @@ var Auth = {};
             // TODO clean this up... it's a bunch of different things that
             // happen based on being logged in vs being paired
             success: function (data) {
-                alert(JSON.stringify(data));
+                // alert(JSON.stringify(data));
                 // if not logged in, request login
                 if (!data.loggedIn) {
                     api.login();
