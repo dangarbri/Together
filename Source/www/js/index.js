@@ -57,8 +57,6 @@
 var MESSAGE_SENDING = "sending..."; // Text to show while message is waiting to be sent to server
 var MESSAGE_SENT    = "not seen"; // text to show before message is read
 var MESSAGE_SEEN    = "seen"; // text to show when message is read by peer
-var SERVER_MESSAGE_ENDPOINT  = "http://192.168.0.33/message"; // Endpoint send/receive messages
-var SERVER_REGISTER_ENDPOINT = "http://192.168.0.33/device";   // Endpoint to login
 var MAX_SAVED_MESSAGES = 100; // Max # of messages to save to device
 
 // TODO remove this, for debug only right now before implementing users
@@ -334,11 +332,14 @@ function setupFCMPlugin() {
     // TODO display message content
     FCMPlugin.onNotification(function(data){
         console.log(JSON.stringify(data));
+        alert("Message received, see console");
         // alert(JSON.stringify(data));
         if (data.action == "receive") {
             refreshMessages();
         } else if (data.action == "read") {
             markRead();
+        } else if (data.action == "typing") {
+            messages.showTyping()
         }
     });
 }
@@ -392,6 +393,7 @@ var app = {
         // so the callback can run init and the user won't get past
         // everything unless they login and pair with a partner
         Auth.checkLoginStatus(function () {
+            alert("Login callback called");
             setupFCMPlugin();
             encryptorInit();
         });
