@@ -6,8 +6,12 @@ var KEY_PHRASE = "encryptionKey";
 function encryptMesage(text) {
     // TODO: should probably verify that a key has been set
     var cipherObject = CryptoJS.AES.encrypt(text, localStorage.getItem(KEY_PHRASE));
-    var decycledCipher = decycle(cipherObject);
-    return JSON.stringify(decycledCipher);
+    // These are the only 2 things needed for decryption
+    var encrypted = {
+        ciphertext: cipherObject.ciphertext,
+        salt: cipherObject.salt
+    }
+    return JSON.stringify(encrypted);
 }
 
 /**

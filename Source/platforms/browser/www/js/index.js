@@ -132,9 +132,16 @@ var messagebar = f7.messagebar.create({
         },
         blur: function () {
             clearInterval(gScrollCheck);
-        }
+        },
     }
 });
+messagebar.el.onkeypress = function (e) {
+    if (e.key == "Enter") {
+        var btn = document.getElementById('js-send-btn');
+        btn.click();
+        return false;
+    }
+}
 
 /**
  * Mark the given html message as sent.
@@ -247,7 +254,7 @@ function registerDevice(token) {
     f7.request({
         method: 'POST',
         url: SERVER_REGISTER_ENDPOINT,
-        data: {user: USERS.Daniel, token: token},
+        data: {token: token},
         // On success mark the message as sent
         success: function () {
             console.log("Device is registered with together server");
@@ -296,7 +303,7 @@ function refreshMessages() {
                 var decryptedMessage = decryptMessage(message.message);
                 displayReceivedMessage(decryptedMessage);
             });
-
+            messageWindow.scrollTop = messageWindow.scrollHeight;
             saveMessages(serializeMessages());
         },
         // TODO: add functionality to make user retry sending
@@ -377,9 +384,7 @@ var app = {
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
         retrieveSavedMessages(function (msgs) {
-            for (var i = 0; i < msgs.length; i++) {
-                messages.addMessage(msgs[i]);
-            }
+            messages.addMessages(msgs, 'append', false);
         })
 
         // Originally I intended for this to just be a getter

@@ -44,8 +44,10 @@ var Auth = {};
      * Ping the server to check if user is logged in
      * runs the callback with true if user is logged in, false if not
      */
-    api.checkLoginStatus = function () {
-        console.log("checking login status");
+    api.checkLoginStatus = function (cb) {
+        if (cb) {
+            api.loginCallback = cb;
+        }
         f7.request({
             method: 'GET',
             url: SERVER_PING_ENDPOINT,
