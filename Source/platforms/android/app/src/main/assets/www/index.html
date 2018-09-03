@@ -26,6 +26,11 @@
             <div class="navbar">
               <div class="navbar-inner">
                 <div class="title">Messages</div>
+                <div class="right">
+                  <a id="js-lock" href="#" class="link icon-only">
+                    <i class="f7-icons">lock_fill</i>
+                  </a>
+                </div>
               </div>
             </div>
             <div class="toolbar messagebar">
@@ -37,126 +42,18 @@
             </div>
             <div id="js-message-window" class="page-content messages-content">
               <div class="messages">
-                <!-- Messages title -->
-                <div class="messages-title"><b>Sunday, Feb 9,</b> 12:58</div>
-                <!-- Full layout sent message -->
-                <div class="message message-sent">
-                  <!-- <div class="message-avatar" style="background-image:url(http://lorempixel.com/100/100/people/7);"></div> -->
-                  <div class="message-content">
-                    <div class="message-name">John Doe</div>
-                    <div class="message-header">Message header</div>
-                    <div class="message-bubble">
-                      <div class="message-text-header">Text header</div>
-                      <div class="message-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
-                      <div class="message-text-footer">Text footer</div>
-                    </div>
-                    <div class="message-footer">Message footer</div>
-                  </div>
-                </div>
-                <!-- Full layout received message -->
-                <div class="message message-received">
-                  <!-- <div class="message-avatar" style="background-image:url(http://lorempixel.com/100/100/people/7);"></div> -->
-                  <div class="message-content">
-                    <div class="message-name">John Doe</div>
-                    <div class="message-header">Message header</div>
-                    <div class="message-bubble">
-                      <div class="message-text-header">Text header</div>
-                      <div class="message-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
-                      <div class="message-text-footer">Text footer</div>
-                    </div>
-                    <div class="message-footer">Message footer</div>
-                  </div>
-                </div>
-                <!-- Messages -->
-                <div class="message message-sent">
-                  <div class="message-content">
-                    <div class="message-bubble">
-                      <div class="message-text">Hi, Kate</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="message message-sent">
-                  <div class="message-content">
-                    <div class="message-bubble">
-                      <div class="message-text">How are you?</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="message message-received">
-                  <!-- <div class="message-avatar" style="background-image:url(http://lorempixel.com/100/100/people/9);"></div> -->
-                  <div class="message-content">
-                    <div class="message-name">Kate</div>
-                    <div class="message-bubble">
-                      <div class="message-text">Hi, I am good!</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="message message-received">
-                  <!-- <div class="message-avatar" style="background-image:url(http://lorempixel.com/100/100/people/7);"></div> -->
-                  <div class="message-content">
-                    <div class="message-name">Blue Ninja</div>
-                    <div class="message-bubble">
-                      <div class="message-text">Hi there, I am also fine, thanks! And how are you?</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="message message-sent">
-                  <div class="message-content">
-                    <div class="message-bubble">
-                      <div class="message-text">Hey, Blue Ninja! Glad to see you ;)</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="message message-sent">
-                  <div class="message-content">
-                    <div class="message-bubble">
-                      <div class="message-text">Hey, look, cutest kitten ever!</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="message message-sent">
-                  <div class="message-content">
-                    <div class="message-bubble">
-                      <!-- <div class="message-image"><img src="http://lorempixel.com/200/260/cats/4/" style="width:200px; height: 260px;"></div> -->
-                    </div>
-                  </div>
-                </div>
-                <div class="message message-received">
-                  <!-- <div class="message-avatar" style="background-image:url(http://lorempixel.com/100/100/people/9);"></div> -->
-                  <div class="message-content">
-                    <div class="message-name">Kate</div>
-                    <div class="message-bubble">
-                      <div class="message-text">Nice!</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="message message-received">
-                  <!-- <div class="message-avatar" style="background-image:url(http://lorempixel.com/100/100/people/9);"></div> -->
-                  <div class="message-content">
-                    <div class="message-name">Kate</div>
-                    <div class="message-bubble">
-                      <div class="message-text">Like it very much!</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="message message-received">
-                  <!-- <div class="message-avatar" style="background-image:url(http://lorempixel.com/100/100/people/7);"></div> -->
-                  <div class="message-content">
-                    <div class="message-name">Blue Ninja</div>
-                    <div class="message-bubble">
-                      <div class="message-text">Awesome!</div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
       </div>
     </div>
+    <script type="text/javascript" src="cordova.js"></script>
     <!-- Path to Framework7 Library JS-->
     <script type="text/javascript" src="js/framework7.js"></script>
     <!-- Path to your app js-->
+    <script type="text/javascript" src="js/message_manager.js"></script>
+    <script type="text/javascript" src="js/crypto/rollups/aes.js"></script>
+    <script type="text/javascript" src="js/encryptor.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript" src="cordova.js"></script>
   </body>
 </html>

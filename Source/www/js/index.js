@@ -54,11 +54,12 @@
     
  */
 
-var MESSAGE_SENDING = "sending...";
-var MESSAGE_SENT    = "not seen";
-var MESSAGE_SEEN    = "seen"; // TODO: implement usage of this.
-var SERVER_MESSAGE_ENDPOINT  = "http://192.168.0.33/message"
-var SERVER_REGISTER_ENDPOINT = "http://192.168.0.33/login"
+var MESSAGE_SENDING = "sending..."; // Text to show while message is waiting to be sent to server
+var MESSAGE_SENT    = "not seen"; // text to show before message is read
+var MESSAGE_SEEN    = "seen"; // text to show when message is read by peer
+var SERVER_MESSAGE_ENDPOINT  = "http://192.168.0.33/message"; // Endpoint send/receive messages
+var SERVER_REGISTER_ENDPOINT = "http://192.168.0.33/device";   // Endpoint to login
+var MAX_SAVED_MESSAGES = 100; // Max # of messages to save to device
 
 // TODO remove this, for debug only right now before implementing users
 var USERS = {
@@ -175,11 +176,11 @@ function getLastMessage() {
  * @param text - text to send in the message
  */
 function postMessage(messageDiv, text) {
-    // TODO: encrypt message eventually.
+    var encryptedMessage = encryptMesage(text);
     f7.request({
         method: 'POST',
         url: SERVER_MESSAGE_ENDPOINT,
-        data: {message: text, to: USERS.Daniel},
+        data: {message: encryptedMessage, to: USERS.Daniel},
         // On success mark the message as sent
         success: function () {
             if (messageDiv) {
@@ -214,6 +215,7 @@ $$('.send-link').on('click', function () {
       text: text,
       footer: MESSAGE_SENDING
     });
+    saveMessages(serializeMessages());
     
     // Get message div that was created
     var messageDiv = getLastMessage();
@@ -228,6 +230,7 @@ function displayReceivedMessage(message) {
         // name: person.name,
         // avatar: person.avatar
     });
+    markRead(); // clears "seen"
 }
 
 /**
@@ -287,10 +290,14 @@ function refreshMessages() {
         data: {user: USERS.Daniel},
         dataType: 'json',
         // On success mark the message as sent
-        success: function (messages) {
-            messages.forEach(function (message) {
-                displayReceivedMessage(message.message);
+        success: function (msgs) {
+            msgs.forEach(function (message) {
+                console.log(message.message);
+                var decryptedMessage = decryptMessage(message.message);
+                displayReceivedMessage(decryptedMessage);
             });
+
+            saveMessages(serializeMessages());
         },
         // TODO: add functionality to make user retry sending
         // don't bother manually retrying, could just be no data connection
@@ -324,10 +331,30 @@ function setupFCMPlugin() {
         if (data.action == "receive") {
             refreshMessages();
         } else if (data.action == "read") {
-            alert("marking messages as read");
             markRead();
         }
     });
+}
+
+function serializeMessages() {
+    var data = [];
+    // We only save the last MAX_SAVED_MESSAGES messages.
+    // So count backwards from the end of the list.
+    var msgIndex = messages.messages.length - MAX_SAVED_MESSAGES;
+    if (msgIndex < 0) {
+        msgIndex = 0;
+    }
+    for (var i = msgIndex; (i < messages.messages.length); i++) {
+        var msg = messages.messages[i];
+        if (!msg.isTitle) {
+            var savedData = {
+                type: msg.type,
+                text: msg.text
+            };
+            data.push(savedData);
+        }
+    }
+    return data;
 }
 
 var app = {
@@ -349,8 +376,13 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+        retrieveSavedMessages(function (msgs) {
+            for (var i = 0; i < msgs.length; i++) {
+                messages.addMessage(msgs[i]);
+            }
+        })
         setupFCMPlugin();
-        refreshMessages();
+        encryptorInit();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
