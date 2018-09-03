@@ -411,6 +411,7 @@ function pingTyping() {
     }, TYPING_PING_INTERVAL)
 }
 
+var gIsInitialized = false;
 var app = {
     // Application Constructor
     initialize: function() {
@@ -422,7 +423,11 @@ var app = {
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
-        document.addEventListener('resume', refreshMessages);
+        document.addEventListener('resume', function () {
+            if (gIsInitialized) {
+                refreshMessages();
+            }
+        });
     },
     // deviceready Event Handler
     //
@@ -442,6 +447,7 @@ var app = {
             // alert("Login callback called");
             setupFCMPlugin();
             encryptorInit();
+            gIsInitialized = true;
         });
     },
     // Update DOM on a Received Event
