@@ -39,6 +39,8 @@ public class FCMPluginActivity extends Activity {
             }
         }
 		
+        final NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
 		FCMPlugin.sendPushPayload(data);
 
         finish();
@@ -64,6 +66,8 @@ public class FCMPluginActivity extends Activity {
 	public void onStart() {
 		super.onStart();
 		Log.d(TAG, "==> FCMPluginActivity onStart");
+        final NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
 	}
 	
 	@Override

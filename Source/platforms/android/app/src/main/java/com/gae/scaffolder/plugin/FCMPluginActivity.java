@@ -38,7 +38,7 @@ public class FCMPluginActivity extends Activity {
 				data.put(key, value);
             }
         }
-		
+
 		FCMPlugin.sendPushPayload(data);
 
         finish();

@@ -27,6 +27,8 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -264,6 +266,10 @@ public class CordovaActivity extends Activity {
     protected void onResume() {
         super.onResume();
         LOG.d(TAG, "Resumed the activity.");
+
+        // Clear notifications on resume
+        final NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
 
         if (this.appView == null) {
             return;
