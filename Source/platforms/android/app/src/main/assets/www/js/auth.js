@@ -99,7 +99,7 @@ var Auth = {};
         f7.request({
             method: 'POST',
             url: SERVER_LOGIN_ENDPOINT,
-            data: {email: username, password: password},
+            data: {email: username, password: password, remember: 'on'},
             dataType: 'json',
             // On success mark the message as sent
             success: function (data) {

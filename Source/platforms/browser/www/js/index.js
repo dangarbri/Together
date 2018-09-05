@@ -51,7 +51,7 @@
         name: person.name,
         avatar: person.avatar
     });
-    
+
  */
 
 var MESSAGE_SENDING = "sending..."; // Text to show while message is waiting to be sent to server
@@ -64,7 +64,7 @@ var TYPING_PING_INTERVAL = 3000;
 var f7 = new Framework7({
     root: '#app'
 });
-  
+
 var mainView = f7.views.create('.view-main');
 
 var $$ = Dom7;
@@ -74,7 +74,7 @@ var messageWindow = document.getElementById("js-message-window");
 // Init Messages
 var messages = f7.messages.create({
     el: '.messages',
-  
+
     // First message rule
     firstMessageRule: function (message, previousMessage, nextMessage) {
       // Skip if title
@@ -113,7 +113,7 @@ var messages = f7.messages.create({
     }
 });
 
-// Interval that runs when message bar is focused to try to 
+// Interval that runs when message bar is focused to try to
 // scroll the screen to the bottom
 var gScrollCheck;
 var gIsTyping = false;
@@ -161,8 +161,7 @@ function hideTyping() {
  * Input is the div with class="message"
  */
 function markMessageSent(messageDiv) {
-    var footer = messageDiv.getElementsByClassName("message-footer")[0];
-    footer.textContent = MESSAGE_SENT;
+    Messenger.setSentTimestamp(messageDiv);
 }
 
 /**
@@ -170,14 +169,9 @@ function markMessageSent(messageDiv) {
  */
 function markRead() {
     var footers = document.getElementsByClassName("message-footer");
-    while (footers.length > 0) {
-        if (footers.length == 1) {
-            footers[0].textContent = MESSAGE_SEEN;
-            break;
-        } else {
-            footers[0].remove();
-            footers = document.getElementsByClassName("message-footer");
-        }
+    for (var i = 0; i < footers.length; i++) {
+        footer = footers[i];
+        Messenger.setReadTimestamp(footer);
     }
 }
 
@@ -201,42 +195,48 @@ function postMessage(messageDiv, text) {
         method: 'POST',
         url: SERVER_MESSAGE_ENDPOINT,
         data: {message: encryptedMessage},
+        dataType: 'json',
         // On success mark the message as sent
-        success: function () {
-            if (messageDiv) {
-                markMessageSent(messageDiv);
+        success: function (data) {
+            if (data.result == 'success') {
+                if (messageDiv) {
+                    markMessageSent(messageDiv);
+                }
+            } else {
+                // TODO: Add error handling for message sent failures
+                alert('Authentication error, this shouldnt happen. Please file a bug');
             }
         },
         // TODO: add functionality to make user retry sending
         // don't bother manually retrying, could just be no data connection
         error: function (data) {
-            console.log(data);
+            alert('failed to send message, need to add handling here to let you retry');
         }
     })
 }
-  
+
   // Response flag
   var responseInProgress = false;
-  
+
 // Send Message
 $$('.send-link').on('click', function () {
     var text = messagebar.getValue().replace(/\n/g, '<br>').trim();
     // return if empty message
     if (!text.length) return;
-  
+
     // TODO: Get last message and remove the message from it
     // so every single message doesn't say "sent"
 
     // Clear area
     messagebar.clear();
-  
+
     // Add message to messages
     messages.addMessage({
       text: text,
       footer: MESSAGE_SENDING
     });
     saveMessages(serializeMessages());
-    
+
     // Get message div that was created
     var messageDiv = getLastMessage();
     postMessage(messageDiv, text);
@@ -256,7 +256,7 @@ function displayReceivedMessage(message) {
 /**
  * Registers the device with the server to be able to send
  * messages directly to it.
- * @param token 
+ * @param token
  */
 // TODO should probably have a getter for this but I'm too lazy while prototyping.
 var userToken; // READ ONLY variable for other functions to see the current token
@@ -271,9 +271,10 @@ function registerDevice(token) {
         // On success mark the message as sent
         success: function () {
             console.log("Device is registered with together server");
+            // Refresh messages after we've registered the device
+            // May not need this but idk
+            refreshMessages();
         },
-        // TODO: add functionality to make user retry sending
-        // don't bother manually retrying, could just be no data connection
         error: function (request) {
             console.log(request.status);
             console.log(request.statusText);

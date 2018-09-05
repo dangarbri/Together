@@ -1,15 +1,11 @@
-var SERVER_MESSAGE_ENDPOINT  = "https://dangarbri.com/message"; // Endpoint send/receive messages
-var SERVER_TYPING_ENDPOINT  = "https://dangarbri.com/message/typing"; // Endpoint send/receive messages
-var SERVER_REGISTER_ENDPOINT = "https://dangarbri.com/device";  // Endpoint to login
-var SERVER_LOGIN_ENDPOINT  = "https://dangarbri.com/login";
-var SERVER_LOGOUT_ENDPOINT = "https://dangarbri.com/logout";
-var SERVER_PING_ENDPOINT = "https://dangarbri.com/device";
-var SERVER_PAIRING_ENDPOINT = "https://dangarbri.com/pair";
+SERVER_BASE = "http://192.168.0.33"
 
-// var SERVER_MESSAGE_ENDPOINT  = "http://192.168.0.33/message"; // Endpoint send/receive messages
-// var SERVER_TYPING_ENDPOINT  = "http://192.168.0.33/message/typing"; // Endpoint send/receive messages
-// var SERVER_REGISTER_ENDPOINT = "http://192.168.0.33/device";  // Endpoint to login
-// var SERVER_LOGIN_ENDPOINT  = "http://192.168.0.33/login";
-// var SERVER_LOGOUT_ENDPOINT = "http://192.168.0.33/logout";
-// var SERVER_PING_ENDPOINT = "http://192.168.0.33/device";
-// var SERVER_PAIRING_ENDPOINT = "http://192.168.0.33/pair";
+// var SERVER_BASE = "https://dangarbri.com"
+
+var SERVER_MESSAGE_ENDPOINT  = SERVER_BASE + "/message"; // Endpoint send/receive messages
+var SERVER_TYPING_ENDPOINT  = SERVER_BASE + "/message/typing"; // Endpoint send/receive messages
+var SERVER_REGISTER_ENDPOINT = SERVER_BASE + "/device";  // Endpoint to login
+var SERVER_LOGIN_ENDPOINT  = SERVER_BASE + "/login";
+var SERVER_LOGOUT_ENDPOINT = SERVER_BASE + "/logout";
+var SERVER_PING_ENDPOINT = SERVER_BASE + "/device";
+var SERVER_PAIRING_ENDPOINT = SERVER_BASE + "/pair";
