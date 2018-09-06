@@ -160,6 +160,8 @@ function postMessage(msg, text) {
         dataType: 'json',
         // On success mark the message as sent
         success: function (data) {
+            console.log("message sent");
+            console.log(data);
             if (data.result == 'success') {
                 Messenger.markSent(msg);
             } else {
@@ -192,8 +194,6 @@ $$('.send-link').on('click', function () {
 
     // Add message to messages
     var msg = Messenger.sendMessage(text);
-    // TODO: determine if I can save less, maybe onpause?
-    saveMessages(serializeMessages());
     postMessage(msg, text);
 });
 
@@ -265,7 +265,6 @@ function refreshMessages() {
                 Messenger.receiveMessage(decryptedMessage, message.created_at);
             });
             messageWindow.scrollTop = messageWindow.scrollHeight;
-            saveMessages(serializeMessages());
         },
         // TODO: add functionality to make user retry sending
         // don't bother manually retrying, could just be no data connection
@@ -313,29 +312,6 @@ function setupFCMPlugin() {
     });
 }
 
-function serializeMessages() {
-    var data = [];
-    // We only save the last MAX_SAVED_MESSAGES messages.
-    // So count backwards from the end of the list.
-    var msgIndex = messages.messages.length - MAX_SAVED_MESSAGES;
-    if (msgIndex < 0) {
-        msgIndex = 0;
-    }
-    for (var i = msgIndex; (i < messages.messages.length); i++) {
-        var msg = messages.messages[i];
-        if (!msg.isTitle) {
-            var savedData = {
-                type: msg.type,
-                text: msg.text,
-                footer: msg.footer,
-                textFooter: msg.textFooter
-            };
-            data.push(savedData);
-        }
-    }
-    return data;
-}
-
 /**
  * Just ping the server's typing endpoint, if we're authenticated it will send
  * a notification to the other user that we're typing
@@ -374,6 +350,10 @@ var app = {
                 refreshMessages();
             }
         });
+        // saveMessages defined in message_manager.js
+        document.addEventListener("pause", function () {
+            saveMessages(messages.messages);
+        }, false);
     },
     // deviceready Event Handler
     //

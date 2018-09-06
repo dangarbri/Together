@@ -23880,7 +23880,6 @@
         method = m.params.newMessagesFirst ? 'prepend' : 'append';
       }
 
-      messageToAdd.id = messageId++;
       m.addMessages([messageToAdd], animate, method);
       return messageToAdd;
     };
@@ -23924,7 +23923,8 @@
         } else {
           m.messages[method === 'append' ? 'push' : 'unshift'](messageToAdd);
         }
-        console.log("Creating message with id: " + messageId);
+        messageToAdd.id = messageId++;
+        console.log("Creating message with id: " + messageToAdd.id);
         messagesHTML += m.renderMessage(messageToAdd, messageToAdd.id);
       });
       var $messagesEls = $(messagesHTML);
