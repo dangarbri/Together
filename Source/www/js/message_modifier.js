@@ -1,14 +1,40 @@
 var Messenger = {};
 (function (m) {
+    /**
+     * I've modified framework7's message object to have some more info
+     * msg object:
+     *   type - included: sent/received
+     *   text - included: message body
+     *   id   - id of the elemend, so you can get the div with js-<id>
+     *   status - status of the message, can be sent, read
+     */
 
-    var SENT_TEXT = "sent at";
-    var READ_TEXT = "read at";
+    var SENT_TEXT = "";
+    var READ_TEXT = "read";
     var SENDING_TEXT = "sending..."; // Text to show while message is waiting to be sent to server
+    var STATUS_SENT = 'sent'
+    var STATUS_READ = 'read'
+    var TYPE_SENT = "sent"
+    var TYPE_RECEIVED = "received"
+
+    function utcToLocalTime(date) {
+        return new Date(Date.UTC(date.getYear(),
+                                 date.getMonth(),
+                                 date.getDate(),
+                                 date.getHours(),
+                                 date.getMinutes(),
+                                 date.getSeconds()
+                                ));
+    }
+
     /**
      * Get the date in the format I want it
      */
-    function getDateString() {
-        var now = new Date();
+    function getDateString(date) {
+        if (!date) {
+            date = new Date();
+        }
+        var now = date;
         var month = now.getMonth() + 1;
         var day = now.getDate();
         var hours = now.getHours();
@@ -25,6 +51,10 @@ var Messenger = {};
         return hours + ":" + minutes + " " + ampm;
     }
 
+    function getMessageDiv(id) {
+        return document.getElementById('js-' + id);
+    }
+
     /**
      * Returns the div for the last message added to the list.
      */
@@ -35,53 +65,87 @@ var Messenger = {};
     }
 
     /**
-     * Sets timestamp for message sent
-     * @param messageDiv - message div created by add message
+     * Mark the message as sent. Sets the sent timestamp in the message body
+     * @param msg - message object returned by addMessage
      */
-    m.setSentTimestamp = function (messageDiv) {
-        var container = messageDiv.getElementsByClassName('message-footer')[0];
-        container.textContent = SENT_TEXT + " " + getDateString();
+    m.markSent = function (msg) {
+        var div = getMessageDiv(msg.id);
+        div.getElementsByClassName('message-text-footer')[0].textContent = SENT_TEXT + getDateString();
+        msg.status = STATUS_SENT;
     }
 
     /**
-     * Update timestamp for when message is read
+     * Update read for all messages timestamp for all messages
      * @param footer - footer div to update
      */
-    m.setReadTimestamp = function (footer) {
-        if (footer.textContent.indexOf(SENT_TEXT) >= 0) {
-            footer.textContent = READ_TEXT + " " + getDateString();
+    m.markRead = function () {
+        // Traverse messages backwards since we only need to update the latest ones
+        var lastReadMarked = false; // Only the last message will be marked read, the rest are implied
+        for (var i = messages.messages.length - 1; i >= 0; i--) {
+            var msg = messages.messages[i];
+            if (msg.type == TYPE_SENT && msg.status == STATUS_READ) {
+                // Once we've reached the last read message we're done updating
+                // so just clear the marking on this one and we're done
+                var div = getMessageDiv(msg.id);
+                if (div) {
+                    var readMessage = document.getElementsByClassName('message-footer');
+                    if (readMessage.length > 0) {
+                        readMessage[0].remove();
+                    }
+                }
+                break;
+            } else if (msg.type == TYPE_SENT && msg.status != STATUS_READ) {
+                // status is sent. Mark it as read and set
+                msg.status = STATUS_READ;
+                if (!lastReadMarked) {
+                    var div = getMessageDiv(msg.id);
+                    if (div) {
+                        var content = div.getElementsByClassName('message-content')[0];
+                        var el = document.createElement('div');
+                        el.className = 'message-footer';
+                        el.textContent = READ_TEXT;
+                        content.appendChild(el);
+                    }
+                    lastReadMarked = true;
+                }
+            }
         }
     }
 
     /**
      * Generic function to add a message
      */
-    function addMessage(type, text) {
+    function addMessage(type, text, time) {
         var options = {
             type: type,
             text: text
         };
-        if (type === 'sent') {
-            options.footer = SENDING_TEXT;
+        if (type === TYPE_SENT) {
+            options.textFooter = SENDING_TEXT;
+        } else if (type === TYPE_RECEIVED) {
+            if (time) {
+                options.textFooter = time;
+            }
         }
-        messages.addMessage(options);
-        var lastMessage = messages.messages[messages.messages.length - 1];
-        lastMessage.div = getLastMessage();
-        return lastMessage;
+        var msg = messages.addMessage(options);
+        return msg;
     }
 
     /**
      * Send a message (Adds to screen)
      */
     m.sendMessage = function (message) {
-        return addMessage('sent', message);
+        return addMessage(TYPE_SENT, message);
     }
 
     /**
      * Receive a message (Adds to screen)
      */
-    m.receiveMessage = function (message) {
-        return addMessage('received', message);
+    m.receiveMessage = function (message, timeString) {
+        var time = new Date(timeString);
+        time = utcToLocalTime(time);
+        var dateString = getDateString(time);
+        return addMessage(TYPE_RECEIVED, message, dateString);
     }
 
 })(Messenger)

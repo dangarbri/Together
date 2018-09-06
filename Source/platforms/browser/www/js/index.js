@@ -130,13 +130,6 @@ var messagebar = f7.messagebar.create({
         },
     }
 });
-// messagebar.el.onkeypress = function (e) {
-//     if (e.key == "Enter") {
-//         var btn = document.getElementById('js-send-btn');
-//         btn.click();
-//         return false;
-//     }
-// }
 
 var gAreTheyTyping = false;
 function showTyping() {
@@ -154,22 +147,11 @@ function hideTyping() {
 }
 
 /**
- * Mark all "not read" messages as read (by removing the not read element)
- */
-function markRead() {
-    var footers = document.getElementsByClassName("message-footer");
-    for (var i = 0; i < footers.length; i++) {
-        footer = footers[i];
-        Messenger.setReadTimestamp(footer);
-    }
-}
-
-/**
  * Posts message to the server. Once message is posted the div is updated to say "sent"
- * @param messageDiv - div created by adding the message being sent
+ * @param msg - message object returned by send/receiveMessage
  * @param text - text to send in the message
  */
-function postMessage(messageDiv, text) {
+function postMessage(msg, text) {
     var encryptedMessage = encryptMesage(text);
     f7.request({
         method: 'POST',
@@ -179,9 +161,7 @@ function postMessage(messageDiv, text) {
         // On success mark the message as sent
         success: function (data) {
             if (data.result == 'success') {
-                if (messageDiv) {
-                    Messenger.setSentTimestamp(messageDiv);
-                }
+                Messenger.markSent(msg);
             } else {
                 // TODO: Add error handling for message sent failures
                 alert('Authentication error, this shouldnt happen. Please file a bug');
@@ -214,14 +194,8 @@ $$('.send-link').on('click', function () {
     var msg = Messenger.sendMessage(text);
     // TODO: determine if I can save less, maybe onpause?
     saveMessages(serializeMessages());
-    postMessage(msg.div, text);
+    postMessage(msg, text);
 });
-
-function displayReceivedMessage(message) {
-    // Add received dummy message
-    Messenger.receiveMessage(message);
-    markRead(); // clears "seen"
-}
 
 /**
  * Registers the device with the server to be able to send
@@ -288,7 +262,7 @@ function refreshMessages() {
             }
             msgs.forEach(function (message) {
                 var decryptedMessage = decryptMessage(message.message);
-                displayReceivedMessage(decryptedMessage);
+                Messenger.receiveMessage(decryptedMessage, message.created_at);
             });
             messageWindow.scrollTop = messageWindow.scrollHeight;
             saveMessages(serializeMessages());
@@ -326,7 +300,7 @@ function setupFCMPlugin() {
         if (data.action == "receive") {
             refreshMessages();
         } else if (data.action == "read") {
-            markRead();
+            Messages.markRead();
         } else if (data.action == "typing") {
             showTyping();
             if (gTypingTimeout) {

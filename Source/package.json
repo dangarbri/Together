@@ -17,6 +17,7 @@
   "dependencies": {
     "cordova-browser": "~5.0.4",
     "cordova-plugin-whitelist": "^1.3.3",
+    "framework7": "^3.2.1",
     "phonegap-plugin-push": "^2.1.3"
   }
 }

@@ -83,6 +83,7 @@ var Auth = {};
                 }
             },
             error: function (data) {
+                // TODO: Add error alert saying service unavailble and close app
                 alert("login failed");
                 console.log(data);
             }
@@ -176,6 +177,6 @@ var Auth = {};
                 console.log(data);
             }
         })
-    }   
+    }
 
 })(Auth);

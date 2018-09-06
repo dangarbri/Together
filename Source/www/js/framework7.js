@@ -19,15 +19,15 @@
   /**
    * Template7 1.4.0
    * Mobile-first HTML template engine
-   * 
+   *
    * http://www.idangero.us/template7/
-   * 
+   *
    * Copyright 2018, Vladimir Kharlampidi
    * The iDangero.us
    * http://www.idangero.us/
-   * 
+   *
    * Licensed under MIT
-   * 
+   *
    * Released on: August 31, 2018
    */
   var t7ctx;
@@ -23653,8 +23653,9 @@
       return data;
     };
 
-    Messages.prototype.renderMessage = function renderMessage (messageToRender) {
+    Messages.prototype.renderMessage = function renderMessage (messageToRender, messageId) {
       var m = this;
+      var id = messageId ? "id=\"js-" + messageId + "\"" : '';
       var message = Utils.extend({
         type: 'sent',
       }, messageToRender);
@@ -23662,9 +23663,9 @@
         return m.params.renderMessage.call(m, message);
       }
       if (message.isTitle) {
-        return ("<div class=\"messages-title\">" + (message.text) + "</div>");
+        return ("<div class=\"messages-title\"" + id + ">" + (message.text) + "</div>");
       }
-      return ("\n      <div class=\"message message-" + (message.type) + " " + (message.isTyping ? 'message-typing' : '') + "\">\n        " + (message.avatar ? ("\n        <div class=\"message-avatar\" style=\"background-image:url(" + (message.avatar) + ")\"></div>\n        ") : '') + "\n        <div class=\"message-content\">\n          " + (message.name ? ("<div class=\"message-name\">" + (message.name) + "</div>") : '') + "\n          " + (message.header ? ("<div class=\"message-header\">" + (message.header) + "</div>") : '') + "\n          <div class=\"message-bubble\">\n            " + (message.textHeader ? ("<div class=\"message-text-header\">" + (message.textHeader) + "</div>") : '') + "\n            " + (message.image ? ("<div class=\"message-image\">" + (message.image) + "</div>") : '') + "\n            " + (message.imageSrc && !message.image ? ("<div class=\"message-image\"><img src=\"" + (message.imageSrc) + "\"></div>") : '') + "\n            " + (message.text || message.isTyping ? ("<div class=\"message-text\">" + (message.text || '') + (message.isTyping ? '<div class="message-typing-indicator"><div></div><div></div><div></div></div>' : '') + "</div>") : '') + "\n            " + (message.textFooter ? ("<div class=\"message-text-footer\">" + (message.textFooter) + "</div>") : '') + "\n          </div>\n          " + (message.footer ? ("<div class=\"message-footer\">" + (message.footer) + "</div>") : '') + "\n        </div>\n      </div>\n    ");
+      return ("\n      <div " + id + " class=\"message message-" + (message.type) + " " + (message.isTyping ? 'message-typing' : '') + "\">\n        " + (message.avatar ? ("\n        <div class=\"message-avatar\" style=\"background-image:url(" + (message.avatar) + ")\"></div>\n        ") : '') + "\n        <div class=\"message-content\">\n          " + (message.name ? ("<div class=\"message-name\">" + (message.name) + "</div>") : '') + "\n          " + (message.header ? ("<div class=\"message-header\">" + (message.header) + "</div>") : '') + "\n          <div class=\"message-bubble\">\n            " + (message.textHeader ? ("<div class=\"message-text-header\">" + (message.textHeader) + "</div>") : '') + "\n            " + (message.image ? ("<div class=\"message-image\">" + (message.image) + "</div>") : '') + "\n            " + (message.imageSrc && !message.image ? ("<div class=\"message-image\"><img src=\"" + (message.imageSrc) + "\"></div>") : '') + "\n            " + (message.text || message.isTyping ? ("<div class=\"message-text\">" + (message.text || '') + (message.isTyping ? '<div class="message-typing-indicator"><div></div><div></div><div></div></div>' : '') + "</div>") : '') + "\n            " + (message.textFooter ? ("<div class=\"message-text-footer\">" + (message.textFooter) + "</div>") : '') + "\n          </div>\n          " + (message.footer ? ("<div class=\"message-footer\">" + (message.footer) + "</div>") : '') + "\n        </div>\n      </div>\n    ");
     };
 
     Messages.prototype.renderMessages = function renderMessages (messagesToRender, method) {
@@ -23857,6 +23858,7 @@
       return m;
     };
 
+    var messageId = 1;
     Messages.prototype.addMessage = function addMessage () {
       var assign, assign$1;
 
@@ -23878,7 +23880,9 @@
         method = m.params.newMessagesFirst ? 'prepend' : 'append';
       }
 
-      return m.addMessages([messageToAdd], animate, method);
+      messageToAdd.id = messageId++;
+      m.addMessages([messageToAdd], animate, method);
+      return messageToAdd;
     };
 
     Messages.prototype.addMessages = function addMessages () {
@@ -23920,7 +23924,8 @@
         } else {
           m.messages[method === 'append' ? 'push' : 'unshift'](messageToAdd);
         }
-        messagesHTML += m.renderMessage(messageToAdd);
+        console.log("Creating message with id: " + messageId);
+        messagesHTML += m.renderMessage(messageToAdd, messageToAdd.id);
       });
       var $messagesEls = $(messagesHTML);
       if (animate) {
