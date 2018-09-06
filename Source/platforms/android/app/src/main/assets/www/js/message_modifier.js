@@ -70,7 +70,8 @@ var Messenger = {};
      */
     m.markSent = function (msg) {
         var div = getMessageDiv(msg.id);
-        div.getElementsByClassName('message-text-footer')[0].textContent = SENT_TEXT + getDateString();
+        msg.textFooter = SENT_TEXT + getDateString();
+        div.getElementsByClassName('message-text-footer')[0].textContent = msg.textFooter;
         msg.status = STATUS_SENT;
     }
 
@@ -91,6 +92,7 @@ var Messenger = {};
                     var readMessage = document.getElementsByClassName('message-footer');
                     if (readMessage.length > 0) {
                         readMessage[0].remove();
+                        msg.footer = null;
                     }
                 }
                 break;
@@ -105,6 +107,7 @@ var Messenger = {};
                         el.className = 'message-footer';
                         el.textContent = READ_TEXT;
                         content.appendChild(el);
+                        msg.footer = READ_TEXT;
                     }
                     lastReadMarked = true;
                 }

@@ -324,20 +324,11 @@ function serializeMessages() {
     for (var i = msgIndex; (i < messages.messages.length); i++) {
         var msg = messages.messages[i];
         if (!msg.isTitle) {
-            var footerText = "";
-            if (msg.div) {
-                var footer = msg.div.getElementsByClassName('message-footer')[0];
-                if (footer) {
-                    footerText = footer.textContent;
-                }
-            }
-            if (footer) {
-                footerText = footer.textContent;
-            }
             var savedData = {
                 type: msg.type,
                 text: msg.text,
-                footer: footerText
+                footer: msg.footer,
+                textFooter: msg.textFooter
             };
             data.push(savedData);
         }
