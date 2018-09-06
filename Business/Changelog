@@ -4,3 +4,10 @@ v 0.1.0
 
 v 0.1.1
 - Added "show typing" feature to see when paired device is typing
+
+v 0.1.2
+- Notifications are cleared when app is opened, instead of on tap only
+
+v 0.1.3
+- Stay logged in forever (need to build)
+- add sent and read timestamps.
