@@ -299,7 +299,7 @@ function setupFCMPlugin() {
         if (data.action == "receive") {
             refreshMessages();
         } else if (data.action == "read") {
-            Messages.markRead();
+            Messenger.markRead();
         } else if (data.action == "typing") {
             showTyping();
             if (gTypingTimeout) {

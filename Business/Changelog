@@ -1,13 +1,21 @@
-v 0.1.0
-- Base app
-- Contains messaging, encryption, authentication, basic stuff
+v 0.1.5
+- hotfix for message read. Everything is stuck as "not seen"
+- add logo
 
-v 0.1.1
-- Added "show typing" feature to see when paired device is typing
-
-v 0.1.2
-- Notifications are cleared when app is opened, instead of on tap only
+v 0.1.4
+- Better timestamps
+- Only save onpause so we're not doing file I/O every message
 
 v 0.1.3
 - Stay logged in forever (need to build)
 - add sent and read timestamps.
+
+v 0.1.2
+- Notifications are cleared when app is opened, instead of on tap only
+
+v 0.1.1
+- Added "show typing" feature to see when paired device is typing
+
+v 0.1.0
+- Base app
+- Contains messaging, encryption, authentication, basic stuff
