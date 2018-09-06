@@ -54,9 +54,6 @@
 
  */
 
-var MESSAGE_SENDING = "sending..."; // Text to show while message is waiting to be sent to server
-var MESSAGE_SENT    = "not seen"; // text to show before message is read
-var MESSAGE_SEEN    = "seen"; // text to show when message is read by peer
 var MAX_SAVED_MESSAGES = 100; // Max # of messages to save to device
 var TYPING_TIMEOUT = 5000;
 var TYPING_PING_INTERVAL = 3000;
@@ -157,14 +154,6 @@ function hideTyping() {
 }
 
 /**
- * Mark the given html message as sent.
- * Input is the div with class="message"
- */
-function markMessageSent(messageDiv) {
-    Messenger.setSentTimestamp(messageDiv);
-}
-
-/**
  * Mark all "not read" messages as read (by removing the not read element)
  */
 function markRead() {
@@ -173,15 +162,6 @@ function markRead() {
         footer = footers[i];
         Messenger.setReadTimestamp(footer);
     }
-}
-
-/**
- * Returns the div for the last message added to the list.
- */
-function getLastMessage() {
-    var messageList = messages.el.getElementsByClassName("message");
-    var lastMessage = messageList[messageList.length-1];
-    return lastMessage;
 }
 
 /**
@@ -200,7 +180,7 @@ function postMessage(messageDiv, text) {
         success: function (data) {
             if (data.result == 'success') {
                 if (messageDiv) {
-                    markMessageSent(messageDiv);
+                    Messenger.setSentTimestamp(messageDiv);
                 }
             } else {
                 // TODO: Add error handling for message sent failures
@@ -231,25 +211,15 @@ $$('.send-link').on('click', function () {
     messagebar.clear();
 
     // Add message to messages
-    messages.addMessage({
-      text: text,
-      footer: MESSAGE_SENDING
-    });
+    var msg = Messenger.sendMessage(text);
+    // TODO: determine if I can save less, maybe onpause?
     saveMessages(serializeMessages());
-
-    // Get message div that was created
-    var messageDiv = getLastMessage();
-    postMessage(messageDiv, text);
+    postMessage(msg.div, text);
 });
 
 function displayReceivedMessage(message) {
     // Add received dummy message
-    messages.addMessage({
-        text: message,
-        type: 'received'
-        // name: person.name,
-        // avatar: person.avatar
-    });
+    Messenger.receiveMessage(message);
     markRead(); // clears "seen"
 }
 
@@ -317,7 +287,6 @@ function refreshMessages() {
                 hideTyping();
             }
             msgs.forEach(function (message) {
-                console.log(message.message);
                 var decryptedMessage = decryptMessage(message.message);
                 displayReceivedMessage(decryptedMessage);
             });
@@ -381,9 +350,20 @@ function serializeMessages() {
     for (var i = msgIndex; (i < messages.messages.length); i++) {
         var msg = messages.messages[i];
         if (!msg.isTitle) {
+            var footerText = "";
+            if (msg.div) {
+                var footer = msg.div.getElementsByClassName('message-footer')[0];
+                if (footer) {
+                    footerText = footer.textContent;
+                }
+            }
+            if (footer) {
+                footerText = footer.textContent;
+            }
             var savedData = {
                 type: msg.type,
-                text: msg.text
+                text: msg.text,
+                footer: footerText
             };
             data.push(savedData);
         }

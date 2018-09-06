@@ -17,7 +17,7 @@
        under the License.
  */
 
-package com.dangarbri.togetherdebug;
+package com.dangarbri.together;
 
 import android.os.Bundle;
 import org.apache.cordova.*;
