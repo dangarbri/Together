@@ -40,6 +40,7 @@ var Auth = {};
         if (cb) {
             api.loginCallback = cb;
         }
+        console.log("checking login status");
         f7.request({
             method: 'GET',
             url: SERVER_PING_ENDPOINT,
@@ -84,8 +85,8 @@ var Auth = {};
             },
             error: function (data) {
                 // TODO: Add error alert saying service unavailble and close app
+                console.log(JSON.stringify(data));
                 alert("login failed");
-                console.log(data);
             }
         })
     }

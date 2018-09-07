@@ -48,6 +48,9 @@
     },
     "cordova-plugin-file": {
       "PACKAGE_NAME": "com.dangarbri.together"
+    },
+    "cordova-plugin-clipboard": {
+      "PACKAGE_NAME": "com.dangarbri.together"
     }
   },
   "dependent_plugins": {

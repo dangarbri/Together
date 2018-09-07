@@ -512,6 +512,14 @@ module.exports = [
         "clobbers": [
             "PushNotification"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-clipboard/www/client.js",
+        "id": "cordova-plugin-clipboard.client",
+        "pluginId": "cordova-plugin-clipboard",
+        "clobbers": [
+            "community.clipboard"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -531,7 +539,8 @@ module.exports.metadata =
     "cordova-plugin-compat": "1.2.0",
     "cordova-plugin-file": "6.0.1",
     "cordova-plugin-fcm": "2.1.2",
-    "cordova-plugin-whitelist": "1.3.3"
+    "cordova-plugin-whitelist": "1.3.3",
+    "cordova-plugin-clipboard": "1.0.0"
 }
 // BOTTOM OF METADATA
 });

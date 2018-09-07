@@ -1,6 +1,12 @@
+v 0.1.6
+- Add Logo
+- Update timestamp to say "AM/PM" instead of "am/pm"
+- Fix multiple messages remaining as "not seen" even when latest message is marked as read
+- Fix ghost typing
+- add copy/paste
+
 v 0.1.5
 - hotfix for message read. Everything is stuck as "not seen"
-- add logo
 
 v 0.1.4
 - Better timestamps

@@ -59,7 +59,14 @@ var TYPING_TIMEOUT = 5000;
 var TYPING_PING_INTERVAL = 3000;
 
 var f7 = new Framework7({
-    root: '#app'
+    root: '#app',
+    touch: {
+        tapHold: true //enable tap hold events
+    },
+    toast: {
+        closeTimeout: 1500,
+        closeButton: true,
+    }
 });
 
 var mainView = f7.views.create('.view-main');
@@ -353,6 +360,7 @@ var app = {
         // saveMessages defined in message_manager.js
         document.addEventListener("pause", function () {
             saveMessages(messages.messages);
+            gIsTyping = false; // onblur isn't enough I guess
         }, false);
     },
     // deviceready Event Handler
@@ -363,6 +371,7 @@ var app = {
         app.receivedEvent('deviceready');
         retrieveSavedMessages(function (msgs) {
             messages.addMessages(msgs, 'append', false);
+            Messenger.linkMessages();
         })
 
         // Originally I intended for this to just be a getter

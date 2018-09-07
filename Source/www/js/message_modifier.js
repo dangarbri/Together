@@ -13,10 +13,12 @@ var Messenger = {};
     var UNREAD_TEXT = "not seen";
     var READ_TEXT = "read";
     var SENDING_TEXT = "sending..."; // Text to show while message is waiting to be sent to server
-    var STATUS_SENT = 'sent'
-    var STATUS_READ = 'read'
-    var TYPE_SENT = "sent"
-    var TYPE_RECEIVED = "received"
+    var STATUS_SENT = 'sent';
+    var STATUS_READ = 'read';
+    var TYPE_SENT = "sent";
+    var TYPE_RECEIVED = "received";
+    var CLIPBOARD_SUCCESS = "Message copied";
+    var CLIPBOARD_FAILURE = "Error copying message, please try again";
 
     /**
      * Get the date in the format I want it
@@ -30,10 +32,10 @@ var Messenger = {};
         var day = now.getDate();
         var hours = now.getHours();
         // Set hours to 12 based instead of 24 hours based
-        var ampm = "am"
+        var ampm = "AM"
         if (hours > 12) {
             hours = hours - 12;
-            ampm = "pm";
+            ampm = "PM";
         }
         var minutes = now.getMinutes();
         if (minutes < 10) {
@@ -48,6 +50,21 @@ var Messenger = {};
      */
     function getMessageDiv(id) {
         return document.getElementById('js-' + id);
+    }
+
+    /**
+     * Clears the footer of the message object
+     * @param msg - message object
+     */
+    function clearFooter(msg) {
+        var div = getMessageDiv(msg.id);
+        if (div) {
+            var readMessage = document.getElementsByClassName('message-footer');
+            if (readMessage.length > 0) {
+                readMessage[0].remove();
+                msg.footer = null;
+            }
+        }
     }
 
     /**
@@ -108,14 +125,7 @@ var Messenger = {};
                 // but only clear it if we've marked a new one as read, otherwise this one
                 // still needs to say read
                 if (lastReadMarked) {
-                    var div = getMessageDiv(msg.id);
-                    if (div) {
-                        var readMessage = document.getElementsByClassName('message-footer');
-                        if (readMessage.length > 0) {
-                            readMessage[0].remove();
-                            msg.footer = null;
-                        }
-                    }
+                    clearFooter(msg);
                 }
                 break;
             } else if (msg.type == TYPE_SENT && msg.status != STATUS_READ) {
@@ -127,9 +137,31 @@ var Messenger = {};
                         updateFooter(msg, READ_TEXT);
                     }
                     lastReadMarked = true;
+                } else {
+                    // clear footer on all the remaining unseen messages
+                    clearFooter(msg);
                 }
             }
         }
+    }
+
+    function setupCopyListener(msg) {
+        // var div = getMessageDiv(msg.id);
+        // $$(div).on('taphold', function () {
+        //     var result = community.clipboard.setText(msg.text);
+        //     if (result != -1) {
+        //         f7.toast.create({
+        //             text: CLIPBOARD_SUCCESS,
+        //             destroyOnClose: true
+        //         });
+        //     } else {
+        //         f7.toast.create({
+        //             text: CLIPBOARD_FAILURE,
+        //             destroyOnClose: true
+        //         })
+        //     }
+        // })
+        // TODO: get clipboard working.
     }
 
     /**
@@ -148,6 +180,7 @@ var Messenger = {};
             }
         }
         var msg = messages.addMessage(options);
+        setupCopyListener(msg);
         return msg;
     }
 
@@ -166,6 +199,12 @@ var Messenger = {};
         var time = new Date(timeString + " UTC");
         var dateString = getDateString(time);
         return addMessage(TYPE_RECEIVED, message, dateString);
+    }
+
+    m.linkMessages = function () {
+        messages.messages.forEach(function (msg) {
+            setupCopyListener(msg);
+        })
     }
 
 })(Messenger)
