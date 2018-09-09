@@ -224,7 +224,7 @@ function registerDevice(token, cb) {
             console.log("Device is registered with together server");
             // Refresh messages after we've registered the device
             // May not need this but idk
-            refreshMessages();
+            refreshMessages(true);
             if (cb) {
                 cb();
             }
@@ -261,10 +261,11 @@ function setupToken() {
  */
 var gTypingTimeout = null;
 function refreshMessages(notify) {
+    var shouldNotify = notify ? 1 : 0;
     f7.request({
         method: 'GET',
         url: SERVER_MESSAGE_ENDPOINT,
-        data: {notify: notify},
+        data: {notify: shouldNotify},
         dataType: 'json',
         // On success mark the message as sent
         success: function (data) {
@@ -319,7 +320,7 @@ function setupFCMPlugin() {
             // alert("Message received, see console");
             // alert(JSON.stringify(data));
             if (data.action == "receive") {
-                refreshMessages();
+                refreshMessages(true);
             } else if (data.action == "read") {
                 Messenger.markRead();
             } else if (data.action == "typing") {
@@ -372,7 +373,7 @@ var app = {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         document.addEventListener('resume', function () {
             if (gIsInitialized) {
-                refreshMessages();
+                refreshMessages(true);
             }
         });
         // saveMessages defined in message_manager.js

@@ -1,5 +1,10 @@
-var SERVER_BASE = "http://192.168.0.33";
-// var SERVER_BASE = "https://dangarbri.com"
+var DEBUG = 0;
+
+if (DEBUG) {
+    var SERVER_BASE = "http://192.168.0.33";
+} else {
+    var SERVER_BASE = "https://dangarbri.com"
+}
 
 var SERVER_MESSAGE_ENDPOINT  = SERVER_BASE + "/message"; // Endpoint send/receive messages
 var SERVER_TYPING_ENDPOINT  = SERVER_BASE + "/message/typing"; // Endpoint send/receive messages
