@@ -1,5 +1,6 @@
 var Auth = {};
 (function (api) {
+    var SESSION_COOKIE = 'laravel_session';
     api.loginCallback = null; // Function to call once user is logged in
     api.pairing = null;
     api.statusCheck = null;
@@ -30,6 +31,11 @@ var Auth = {};
             method: 'GET',
             url: SERVER_LOGOUT_ENDPOINT
         });
+    }
+
+    function getCookieValue(a) {
+        var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
+        return b ? b.pop() : '';
     }
 
     /**

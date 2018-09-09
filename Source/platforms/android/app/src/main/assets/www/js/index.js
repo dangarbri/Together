@@ -211,7 +211,7 @@ $$('.send-link').on('click', function () {
  */
 // TODO should probably have a getter for this but I'm too lazy while prototyping.
 var userToken; // READ ONLY variable for other functions to see the current token
-function registerDevice(token) {
+function registerDevice(token, cb) {
     console.log("Registering device with together servers");
     // Set token we're registering with
     userToken = token;
@@ -225,6 +225,9 @@ function registerDevice(token) {
             // Refresh messages after we've registered the device
             // May not need this but idk
             refreshMessages();
+            if (cb) {
+                cb();
+            }
         },
         error: function (request) {
             console.log(request.status);
@@ -247,22 +250,25 @@ function setupToken() {
             registerDevice(token);
         }
     }, function (err) {
-        console.log("Failed to get device token, app won't work. Tell Daniel FCM Plugin isn't working");
+        alert("Failed to get device token, app won't work. Tell Daniel FCM Plugin isn't working");
     });
 }
 
 /**
  * Request messages from the server
  * Intended to be called when notification is received or app is opened
+ * @param[in] notify - Notify other device that message was read
  */
 var gTypingTimeout = null;
-function refreshMessages() {
+function refreshMessages(notify) {
     f7.request({
         method: 'GET',
         url: SERVER_MESSAGE_ENDPOINT,
+        data: {notify: notify},
         dataType: 'json',
         // On success mark the message as sent
-        success: function (msgs) {
+        success: function (data) {
+            var msgs = data.messages;
             if (gTypingTimeout) {
                 clearTimeout(gTypingTimeout);
                 hideTyping();
@@ -272,6 +278,14 @@ function refreshMessages() {
                 Messenger.receiveMessage(decryptedMessage, message.created_at);
             });
             messageWindow.scrollTop = messageWindow.scrollHeight;
+
+            // Handle browser stuff
+            if (data.read) {
+                BrowserMessenger.markRead();
+            }
+            if (msgs.length > 0) {
+                BrowserMessenger.MessageReceived();
+            }
         },
         // TODO: add functionality to make user retry sending
         // don't bother manually retrying, could just be no data connection
@@ -289,34 +303,38 @@ function refreshMessages() {
  * This will respond when a message is received
  */
 function setupFCMPlugin() {
-    FCMPlugin.onTokenRefresh(function(token) {
-        if (token != userToken) {
-            registerDevice(token);
-        }
-    });
-
-    setupToken();
-
-    // Here you define your application behaviour based on the notification data.
-    // TODO display message content
-    FCMPlugin.onNotification(function(data){
-        console.log(JSON.stringify(data));
-        // alert("Message received, see console");
-        // alert(JSON.stringify(data));
-        if (data.action == "receive") {
-            refreshMessages();
-        } else if (data.action == "read") {
-            Messenger.markRead();
-        } else if (data.action == "typing") {
-            showTyping();
-            if (gTypingTimeout) {
-                clearTimeout(gTypingTimeout);
+    if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {
+        FCMPlugin.onTokenRefresh(function(token) {
+            if (token != userToken) {
+                registerDevice(token);
             }
-            gTypingTimeout = setTimeout(function () {
-                hideTyping();
-            }, TYPING_TIMEOUT); // Hide typing after ~7.5 seconds, or if a message was received
-        }
-    });
+        });
+
+        setupToken();
+
+        // Here you define your application behaviour based on the notification data.
+        // TODO display message content
+        FCMPlugin.onNotification(function(data){
+            console.log(JSON.stringify(data));
+            // alert("Message received, see console");
+            // alert(JSON.stringify(data));
+            if (data.action == "receive") {
+                refreshMessages();
+            } else if (data.action == "read") {
+                Messenger.markRead();
+            } else if (data.action == "typing") {
+                showTyping();
+                if (gTypingTimeout) {
+                    clearTimeout(gTypingTimeout);
+                }
+                gTypingTimeout = setTimeout(function () {
+                    hideTyping();
+                }, TYPING_TIMEOUT); // Hide typing after ~7.5 seconds, or if a message was received
+            }
+        });
+    } else {
+        BrowserMessenger.Start();
+    }
 }
 
 /**
