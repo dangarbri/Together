@@ -1,9 +1,23 @@
+v0.1.10
+- Add link support
+
+v 0.1.9
+- Fix for messages not being marked read
+
+v 0.1.8
+- Mobile fix for things that broke while working on browser support.
+- Also breaks browser support
+
+v 0.1.7
+- attempt copy paste
+- Requires new APK
+- Add browser support
+
 v 0.1.6
 - Add Logo
 - Update timestamp to say "AM/PM" instead of "am/pm"
 - Fix multiple messages remaining as "not seen" even when latest message is marked as read
 - Fix ghost typing
-- add copy/paste
 
 v 0.1.5
 - hotfix for message read. Everything is stuck as "not seen"

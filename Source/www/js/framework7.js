@@ -23653,6 +23653,21 @@
       return data;
     };
 
+    /**
+     * Scans message for http urls and creates links
+     */
+    function addLinks(message) {
+      // Split by spaces, urls don't have spaces
+      var words = message.split(' ');
+
+      for (var i = 0; i < words.length; i++) {
+        if (words[i].startsWith('http://') || words[i].startsWith('https://')) {
+          words[i] = "<a href=\"" + words[i] + "\">" + words[i] + "</a>";
+        }
+      }
+      return words.join(' ');
+    }
+
     Messages.prototype.renderMessage = function renderMessage (messageToRender, messageId) {
       var m = this;
       var id = messageId ? "id=\"js-" + messageId + "\"" : '';
@@ -23665,7 +23680,27 @@
       if (message.isTitle) {
         return ("<div class=\"messages-title\"" + id + ">" + (message.text) + "</div>");
       }
-      return ("\n      <div " + id + " class=\"message message-" + (message.type) + " " + (message.isTyping ? 'message-typing' : '') + "\">\n        " + (message.avatar ? ("\n        <div class=\"message-avatar\" style=\"background-image:url(" + (message.avatar) + ")\"></div>\n        ") : '') + "\n        <div class=\"message-content\">\n          " + (message.name ? ("<div class=\"message-name\">" + (message.name) + "</div>") : '') + "\n          " + (message.header ? ("<div class=\"message-header\">" + (message.header) + "</div>") : '') + "\n          <div class=\"message-bubble\">\n            " + (message.textHeader ? ("<div class=\"message-text-header\">" + (message.textHeader) + "</div>") : '') + "\n            " + (message.image ? ("<div class=\"message-image\">" + (message.image) + "</div>") : '') + "\n            " + (message.imageSrc && !message.image ? ("<div class=\"message-image\"><img src=\"" + (message.imageSrc) + "\"></div>") : '') + "\n            " + (message.text || message.isTyping ? ("<div class=\"message-text\">" + (message.text || '') + (message.isTyping ? '<div class="message-typing-indicator"><div></div><div></div><div></div></div>' : '') + "</div>") : '') + "\n            " + (message.textFooter ? ("<div class=\"message-text-footer\">" + (message.textFooter) + "</div>") : '') + "\n          </div>\n          " + (message.footer ? ("<div class=\"message-footer\">" + (message.footer) + "</div>") : '') + "\n        </div>\n      </div>\n    ");
+
+      var text = addLinks(message.text);
+
+      return ("\n      <div " +
+                  id +
+            " class=\"message message-" + (message.type) + " " + (message.isTyping ? 'message-typing' : '') + "\">\n        " +
+            (message.avatar ? ("\n        <div class=\"message-avatar\" style=\"background-image:url(" +
+            (message.avatar) + ")\"></div>\n        ") : '') + "\n        <div class=\"message-content\">\n          " +
+            (message.name ? ("<div class=\"message-name\">" +
+            (message.name) + "</div>") : '') + "\n          " +
+            (message.header ? ("<div class=\"message-header\">" +
+            (message.header) + "</div>") : '') + "\n          <div class=\"message-bubble\">\n            " +
+            (message.textHeader ? ("<div class=\"message-text-header\">" +
+            (message.textHeader) + "</div>") : '') + "\n            " +
+            (message.image ? ("<div class=\"message-image\">" +
+            (message.image) + "</div>") : '') + "\n            " +
+            (message.imageSrc && !message.image ? ("<div class=\"message-image\"><img src=\"" +
+            (message.imageSrc) + "\"></div>") : '') + "\n            " +
+            (text || message.isTyping ?
+              ("<div class=\"message-text\">" + (text || '') +
+              (message.isTyping ? '<div class="message-typing-indicator"><div></div><div></div><div></div></div>' : '') + "</div>") : '') + "\n            " + (message.textFooter ? ("<div class=\"message-text-footer\">" + (message.textFooter) + "</div>") : '') + "\n          </div>\n          " + (message.footer ? ("<div class=\"message-footer\">" + (message.footer) + "</div>") : '') + "\n        </div>\n      </div>\n    ");
     };
 
     Messages.prototype.renderMessages = function renderMessages (messagesToRender, method) {
