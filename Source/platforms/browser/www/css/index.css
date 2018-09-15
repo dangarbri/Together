@@ -29,7 +29,7 @@ body {
 
 .navbar {
     user-select: none;
-    -webkit-user-select: text;
+    -webkit-user-select: none;
 }
 
 .message-footer {

@@ -23662,7 +23662,7 @@
 
       for (var i = 0; i < words.length; i++) {
         if (words[i].startsWith('http://') || words[i].startsWith('https://')) {
-          words[i] = "<a href=\"" + words[i] + "\">" + words[i] + "</a>";
+          words[i] = "<a target=\"_blank\" onclick=\"openLink(this)\" href=\"" + words[i] + "\">" + words[i] + "</a>";
         }
       }
       return words.join(' ');

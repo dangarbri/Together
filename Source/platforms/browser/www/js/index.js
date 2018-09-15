@@ -54,6 +54,11 @@
 
  */
 
+function openLink(el) {
+    console.log('opening ' + el.href);
+    window.open(encodeURI(el.href), '_system');
+}
+
 var MAX_SAVED_MESSAGES = 100; // Max # of messages to save to device
 var TYPING_TIMEOUT = 5000;
 var TYPING_PING_INTERVAL = 3000;
@@ -123,17 +128,19 @@ var gScrollCheck;
 var gIsTyping = false;
 var messagebar = f7.messagebar.create({
     el: '.messagebar',
+    attachmentsVisible: true,
     on: {
+        keypress: function () {
+            pingTyping();
+        },
         focus: function () {
             gScrollCheck = setInterval(function () {
                 messageWindow.scrollTop = messageWindow.scrollHeight;
             }, 200);
-            pingTyping();
-            gIsTyping = true;
         },
         blur: function () {
             clearInterval(gScrollCheck);
-            gIsTyping = false;
+            cancelTyping();
         },
     }
 });
@@ -192,9 +199,7 @@ $$('.send-link').on('click', function () {
     var text = messagebar.getValue().replace(/\n/g, '<br>').trim();
     // return if empty message
     if (!text.length) return;
-
-    // TODO: Get last message and remove the message from it
-    // so every single message doesn't say "sent"
+    cancelTyping();
 
     // Clear area
     messagebar.clear();
@@ -339,24 +344,38 @@ function setupFCMPlugin() {
 }
 
 /**
+ * pingTyping begins the flow where we periodically ping the paired device that we're
+ * typing. This ends that.
+ */
+function cancelTyping() {
+    if (gIsTyping) {
+        clearTimeout(gPingTimeout);
+        gIsTyping = false;
+    }
+}
+
+/**
  * Just ping the server's typing endpoint, if we're authenticated it will send
  * a notification to the other user that we're typing
  */
 var gPingTimeout = null;
 function pingTyping() {
-    f7.request({
-        method: 'POST',
-        url: SERVER_TYPING_ENDPOINT
-    })
-    if (gPingTimeout) {
-        clearTimeout(gPingTimeout);
-    }
-    // if still typing after 5 seconds, ping again
-    gPingTimeout = setTimeout(function () {
-        if (gIsTyping) {
-            pingTyping();
+    if (!gIsTyping) {
+        gIsTyping = true;
+        f7.request({
+            method: 'POST',
+            url: SERVER_TYPING_ENDPOINT
+        })
+        if (gPingTimeout) {
+            clearTimeout(gPingTimeout);
         }
-    }, TYPING_PING_INTERVAL)
+        // if still typing after 5 seconds, ping again
+        gPingTimeout = setTimeout(function () {
+            if (gIsTyping) {
+                pingTyping();
+            }
+        }, TYPING_PING_INTERVAL)
+    }
 }
 
 var gIsInitialized = false;
