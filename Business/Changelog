@@ -1,3 +1,9 @@
+v 0.2.1
+- Update picture support to scale down images
+
+v0.2.0
+- Add picture support
+
 v0.1.10
 - Add link support
 - Add camera support
