@@ -36,6 +36,37 @@ body {
     padding-bottom: 10px;
 }
 
+.message-image {
+    margin-bottom: 5px;
+}
+
+.fab {
+    bottom: 60px !important;
+    -webkit-transition: left ease-in-out 0.6s;
+    transition: left ease-in-out 0.6s;
+}
+
+.fab a {
+    width: 40px !important;
+    height: 40px !important;
+}
+
+.fab-camera {
+    left: -100px !important;
+}
+
+.fab-gallery {
+    left: -155px !important;
+    /* left: 55px; */
+}
+
+.fab-camera-in {
+    left: 15px !important;
+}
+.fab-gallery-in {
+    left: 65px !important;
+}
+
 @font-face {
     font-family: 'Framework7 Icons';
     font-style: normal;

@@ -122,6 +122,28 @@ var messages = f7.messages.create({
     }
 });
 
+function toggleCameraButtons() {
+    $$(fab_camera).toggleClass('fab-camera-in');
+    $$(fab_gallery).toggleClass('fab-gallery-in');
+}
+
+var fab_camera  = document.getElementById('js-fab-cam');
+var fab_gallery = document.getElementById('js-fab-gal');
+// Attachments handling
+$$('a.toggle-sheet').on('click', function () {
+    toggleCameraButtons();
+});
+
+$$(fab_camera).on('click', function () {
+    Photos.TakePicture(attachImage);
+    toggleCameraButtons();
+})
+
+$$(fab_gallery).on('click', function () {
+    Photos.SelectPicture(attachImage);
+    toggleCameraButtons();
+})
+
 // Interval that runs when message bar is focused to try to
 // scroll the screen to the bottom
 var gScrollCheck;
@@ -145,6 +167,53 @@ var messagebar = f7.messagebar.create({
     }
 });
 
+  /*========================
+    Handle Attachments
+    ========================*/
+  function checkAttachments() {
+    if (messagebar.attachments.length > 0) {
+      messagebar.attachmentsShow();
+      messagebar.setPlaceholder('Add comment or Send');
+    } else {
+      messagebar.attachmentsHide();
+      messagebar.setPlaceholder('Message');
+    }
+  }
+
+  function attachImage(uri) {
+    messagebar.attachments = [uri];
+    messagebar.renderAttachments();
+    checkAttachments();
+  }
+
+  function clearAttachments() {
+    messagebar.attachments = [];
+    messagebar.renderAttachments();
+    checkAttachments();
+  }
+
+  $$('.messagebar-sheet-image input').on('change', function (e) {
+    var image = images[index];
+    if (e.target.checked) {
+      // Add to attachments
+      messagebar.attachments.unshift(image)
+    } else {
+      // Remove from attachments
+      messagebar.attachments.splice(messagebar.attachments.indexOf(image), 1);
+    }
+    messagebar.renderAttachments();
+    checkAttachments();
+  });
+
+  messagebar.on('attachmentDelete', function (messagebar, attachmentEl, attachmentIndex) {
+    var image = messagebar.attachments.splice(attachmentIndex, 1)[0];
+    messagebar.renderAttachments();
+    checkAttachments();
+  });
+
+
+
+
 var gAreTheyTyping = false;
 function showTyping() {
     if (!gAreTheyTyping) {
@@ -165,12 +234,15 @@ function hideTyping() {
  * @param msg - message object returned by send/receiveMessage
  * @param text - text to send in the message
  */
-function postMessage(msg, text) {
+function postMessage(msg, text, image) {
     var encryptedMessage = encryptMesage(text);
+    if (image) {
+        image = encryptMesage(image);
+    }
     f7.request({
         method: 'POST',
         url: SERVER_MESSAGE_ENDPOINT,
-        data: {message: encryptedMessage},
+        data: {message: encryptedMessage, image: image},
         dataType: 'json',
         // On success mark the message as sent
         success: function (data) {
@@ -186,6 +258,7 @@ function postMessage(msg, text) {
         // TODO: add functionality to make user retry sending
         // don't bother manually retrying, could just be no data connection
         error: function (data) {
+            // console.log(JSON.stringify(data.response));
             alert('failed to send message, need to add handling here to let you retry');
         }
     })
@@ -197,16 +270,25 @@ function postMessage(msg, text) {
 // Send Message
 $$('.send-link').on('click', function () {
     var text = messagebar.getValue().replace(/\n/g, '<br>').trim();
-    // return if empty message
-    if (!text.length) return;
+    // return if empty message and no picutre
+    if (!text.length && (messagebar.attachments.length == 0)) return;
+
+    // Stop sending typing ping
     cancelTyping();
 
-    // Clear area
-    messagebar.clear();
+    // Get attachments
+    var attachment = null;
+    if (messagebar.attachments.length > 0) {
+        attachment = messagebar.attachments[0]
+    }
 
     // Add message to messages
-    var msg = Messenger.sendMessage(text);
-    postMessage(msg, text);
+    var msg = Messenger.sendMessage(text, attachment);
+
+    messagebar.clear();
+    clearAttachments();
+
+    postMessage(msg, text, attachment);
 });
 
 /**
@@ -281,17 +363,21 @@ function refreshMessages(notify) {
             }
             msgs.forEach(function (message) {
                 var decryptedMessage = decryptMessage(message.message);
-                Messenger.receiveMessage(decryptedMessage, message.created_at);
+                var image = null;
+                if (message.image) {
+                    image = decryptMessage(message.image);
+                }
+                Messenger.receiveMessage(decryptedMessage, message.created_at, image);
             });
             messageWindow.scrollTop = messageWindow.scrollHeight;
 
             // Handle browser stuff
-            if (data.read) {
-                BrowserMessenger.markRead();
-            }
-            if (msgs.length > 0) {
-                BrowserMessenger.MessageReceived();
-            }
+            // if (data.read) {
+            //     BrowserMessenger.markRead();
+            // }
+            // if (msgs.length > 0) {
+            //     BrowserMessenger.MessageReceived();
+            // }
         },
         // TODO: add functionality to make user retry sending
         // don't bother manually retrying, could just be no data connection
@@ -339,7 +425,7 @@ function setupFCMPlugin() {
             }
         });
     } else {
-        BrowserMessenger.Start();
+        // BrowserMessenger.Start();
     }
 }
 

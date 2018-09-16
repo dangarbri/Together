@@ -23,6 +23,16 @@
       <!-- Your main view, should have "view-main" class -->
       <div class="view view-main">
         <div class="page">
+            <div id="js-fab-cam" class="fab fab-left-bottom fab-camera" onclick="Photos.TakePicture()">
+              <a href="#">
+                <i class="icon f7-icons">camera_fill</i>
+              </a>
+            </div>
+            <div id="js-fab-gal" class="fab fab-left-bottom fab-gallery">
+              <a href="#">
+                <i class="icon f7-icons">images_fill</i>
+              </a>
+            </div>
             <div class="navbar">
               <div class="navbar-inner">
                 <div class="title">Messages</div>
@@ -35,10 +45,15 @@
             </div>
             <div class="toolbar messagebar">
               <div class="toolbar-inner">
+                <a class="link toggle-sheet" href="#">
+                  <i class="icon f7-icons md-only">camera_fill</i>
+                </a>
                 <div class="messagebar-area">
                   <textarea class="resizable" placeholder="Message"></textarea>
-                </div><a id='js-send-btn' class="link send-link" href="#">Send</a>
+                </div>
+                <a id='js-send-btn' class="link send-link" href="#">Send</a>
               </div>
+              <div class="messagebar-sheet"></div>
             </div>
             <div id="js-message-window" class="page-content messages-content">
               <div class="messages">
@@ -95,6 +110,7 @@
     <script type="text/javascript" src="js/message_modifier.js"></script>
     <script type="text/javascript" src="js/message_manager.js"></script>
     <script type="text/javascript" src="js/browser_messages.js"></script>
+    <script type="text/javascript" src="js/camera.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
   </body>
 </html>

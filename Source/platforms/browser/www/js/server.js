@@ -1,4 +1,4 @@
-var DEBUG = 0;
+var DEBUG = 1;
 
 if (DEBUG) {
     var SERVER_BASE = "http://192.168.0.33";

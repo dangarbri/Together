@@ -31,7 +31,17 @@ function writeFile(fileEntry, dataObj) {
     });
 }
 
-var FILENAME = "messages";
+function getFileDate() {
+    var date = new Date();
+    return date.getFullYear() +
+          "_" + date.getMonth() +
+          "_" + date.getDate() +
+          "_" + date.getHours() +
+          "_" + date.getMinutes() +
+          "_" + date.getSeconds() +
+          "_" + Math.floor(Math.random() * 100000)
+}
+
 /**
  * Save messages to file
  */

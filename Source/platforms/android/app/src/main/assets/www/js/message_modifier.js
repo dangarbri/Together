@@ -164,14 +164,27 @@ var Messenger = {};
         // TODO: get clipboard working.
     }
 
+    function setupImgListener(msg) {
+        var div = getMessageDiv(msg.id);
+        var img = div.getElementsByClassName('message-image');
+        if (img.length > 0) {
+            img = img[0];
+
+
+        }
+    }
+
     /**
      * Generic function to add a message
      */
-    function addMessage(type, text, time) {
+    function addMessage(type, text, time, image) {
         var options = {
             type: type,
             text: text
         };
+        if (image) {
+            options.imageSrc = image;
+        }
         if (type === TYPE_SENT) {
             options.textFooter = SENDING_TEXT;
         } else if (type === TYPE_RECEIVED) {
@@ -187,18 +200,36 @@ var Messenger = {};
     /**
      * Send a message (Adds to screen)
      */
-    m.sendMessage = function (message) {
-        return addMessage(TYPE_SENT, message);
+    m.sendMessage = function (message, image) {
+        return addMessage(TYPE_SENT, message, null, image);
     }
 
+    var saveFailureAlerted = false;
     /**
      * Receive a message (Adds to screen)
      */
-    m.receiveMessage = function (message, timeString) {
+    m.receiveMessage = function (message, timeString, image) {
         timeString = timeString.replace(/-/g,'/');
         var time = new Date(timeString + " UTC");
         var dateString = getDateString(time);
-        return addMessage(TYPE_RECEIVED, message, dateString);
+        if (image) {
+            window.imageSaver.saveBase64Image({
+                data: image,
+                format: 'PNG'
+            }, function () {
+                // alert('img save successful');
+            }, function (err) {
+                // Let user know we couldn't save the image. It's most likely
+                // just storage permissions, so only alert user once per open
+                // TODO: Add this in a setting, auto-save image
+                if (!saveFailureAlerted) {
+                    saveFailureAlerted = true;
+                    alert('Unable to save image. Please allow storage permissions');
+                }
+            });
+        }
+
+        return addMessage(TYPE_RECEIVED, message, dateString, image);
     }
 
     m.linkMessages = function () {
