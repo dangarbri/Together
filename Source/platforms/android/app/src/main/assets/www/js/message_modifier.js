@@ -219,10 +219,7 @@ var Messenger = {};
                 data: image,
                 format: Configuration.OPT_PICTURE_TYPE
             }, function (img) {
-                alert("saved img");
-                console.log(img);
-                alert(img);
-                // alert('img save successful');
+                addMessage(TYPE_RECEIVED, message, dateString, img);
             }, function (err) {
                 // Let user know we couldn't save the image. It's most likely
                 // just storage permissions, so only alert user once per open

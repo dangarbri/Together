@@ -20,7 +20,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="SaveImageGallery.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="SaveImageGallery.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/agomezmoron/SaveImageGallery/SaveImageGallery.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="159">
@@ -30,11 +30,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CameraLauncher.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="CameraLauncher.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/org/apache/cordova/camera/CameraLauncher.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="462">
-              <caret line="848" column="16" lean-forward="false" selection-start-line="848" selection-start-column="16" selection-end-line="848" selection-end-column="16" />
+            <state relative-caret-position="411">
+              <caret line="845" column="23" lean-forward="true" selection-start-line="845" selection-start-column="23" selection-end-line="845" selection-end-column="23" />
               <folding>
                 <element signature="e#53204#53205#0" expanded="true" />
                 <element signature="e#53251#53252#0" expanded="true" />
@@ -3767,14 +3767,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/agomezmoron/SaveImageGallery/SaveImageGallery.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="87" column="46" lean-forward="false" selection-start-line="87" selection-start-column="46" selection-end-line="87" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/org/apache/cordova/camera/CameraPreview.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
@@ -3843,14 +3835,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/org/apache/cordova/camera/CameraLauncher.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="848" column="16" lean-forward="false" selection-start-line="848" selection-start-column="16" selection-end-line="848" selection-end-column="16" />
+        <state relative-caret-position="411">
+          <caret line="845" column="23" lean-forward="true" selection-start-line="845" selection-start-column="23" selection-end-line="845" selection-end-column="23" />
           <folding>
             <element signature="e#53204#53205#0" expanded="true" />
             <element signature="e#53251#53252#0" expanded="true" />
             <element signature="e#53885#53886#0" expanded="true" />
             <element signature="e#53923#53924#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/agomezmoron/SaveImageGallery/SaveImageGallery.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="87" column="46" lean-forward="false" selection-start-line="87" selection-start-column="46" selection-end-line="87" selection-end-column="46" />
+          <folding />
         </state>
       </provider>
     </entry>
