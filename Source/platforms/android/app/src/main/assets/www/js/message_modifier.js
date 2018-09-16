@@ -207,6 +207,8 @@ var Messenger = {};
     var saveFailureAlerted = false;
     /**
      * Receive a message (Adds to screen)
+     *
+     * No return value
      */
     m.receiveMessage = function (message, timeString, image) {
         timeString = timeString.replace(/-/g,'/');
@@ -215,8 +217,11 @@ var Messenger = {};
         if (image) {
             window.imageSaver.saveBase64Image({
                 data: image,
-                format: 'PNG'
-            }, function () {
+                format: Configuration.OPT_PICTURE_TYPE
+            }, function (img) {
+                alert("saved img");
+                console.log(img);
+                alert(img);
                 // alert('img save successful');
             }, function (err) {
                 // Let user know we couldn't save the image. It's most likely
@@ -227,9 +232,9 @@ var Messenger = {};
                     alert('Unable to save image. Please allow storage permissions');
                 }
             });
+        } else {
+            addMessage(TYPE_RECEIVED, message, dateString, image);
         }
-
-        return addMessage(TYPE_RECEIVED, message, dateString, image);
     }
 
     m.linkMessages = function () {

@@ -4,9 +4,27 @@
 
 var Photos = {};
 (function (Photos) {
+    // Get Camera encoding enum value based on configuration
+    // If configuration is invalid return JPEG
+    function getEncoding() {
+        if (Configuration.OPT_PICTURE_TYPE == "png") {
+            return Camera.EncodingType.PNG;
+        } else if (Configuration.OPT_PICTURE_TYPE == "jpeg") {
+            return Camera.EncodingType.JPEG;
+        } else {
+            return Camera.EncodingType.JPEG;
+        }
+    }
 
     function genUri(base64) {
-        return "data:image/png;base64," + base64;
+        var type = Configuration.OPT_PICTURE_TYPE
+        return "data:image/"+ type +";base64," + base64;
+    }
+
+    function getFile(path, callback) {
+        window.resolveLocalFileSystemURL(path, function (fp) {
+            callback(fp.nativeURL);
+        }, function () {alert('Failed to get filesystem url')});
     }
 
     /**
@@ -20,11 +38,12 @@ var Photos = {};
             return;
         }
         navigator.camera.getPicture(function (image) {
-            var uri = genUri(image)
-            callback(uri);
+            getFile(image, callback);
         }, null, {
-            destinationType: Camera.DestinationType.DATA_URL,
-            encodingType: Camera.EncodingType.PNG
+            destinationType: Camera.DestinationType.FILE_URI,
+            encodingType: getEncoding(),
+            saveToPhotoAlbum: true,
+            quality: Configuration.OPT_IMAGE_QUALITY
         });
     }
 
@@ -34,12 +53,13 @@ var Photos = {};
             return;
         }
         navigator.camera.getPicture(function (image) {
-            var uri = genUri(image);
-            callback(uri);
+            getFile(image, callback);
         }, null, {
-            destinationType: Camera.DestinationType.DATA_URL,
-            encodingType: Camera.EncodingType.PNG,
-            sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+            destinationType: Camera.DestinationType.FILE_URI,
+            encodingType: getEncoding(),
+            sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+            quality: Configuration.OPT_IMAGE_QUALITY,
+            saveToPhotoAlbum: true
         });
     }
 

@@ -236,32 +236,15 @@ function hideTyping() {
  */
 function postMessage(msg, text, image) {
     var encryptedMessage = encryptMesage(text);
+    var encryptedImage = null;
     if (image) {
-        image = encryptMesage(image);
+        loadImageData(image, function (data) {
+            encryptedImage = encryptMesage(data);
+            ServerApi.SendMessage(msg, encryptedMessage, encryptedImage);
+        })
+    } else {
+        ServerApi.SendMessage(msg, encryptedMessage, encryptedImage);
     }
-    f7.request({
-        method: 'POST',
-        url: SERVER_MESSAGE_ENDPOINT,
-        data: {message: encryptedMessage, image: image},
-        dataType: 'json',
-        // On success mark the message as sent
-        success: function (data) {
-            console.log("message sent");
-            console.log(data);
-            if (data.result == 'success') {
-                Messenger.markSent(msg);
-            } else {
-                // TODO: Add error handling for message sent failures
-                alert('Authentication error, this shouldnt happen. Please file a bug');
-            }
-        },
-        // TODO: add functionality to make user retry sending
-        // don't bother manually retrying, could just be no data connection
-        error: function (data) {
-            // console.log(JSON.stringify(data.response));
-            alert('failed to send message, need to add handling here to let you retry');
-        }
-    })
 }
 
   // Response flag

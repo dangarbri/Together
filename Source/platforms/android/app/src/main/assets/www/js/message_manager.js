@@ -31,6 +31,20 @@ function writeFile(fileEntry, dataObj) {
     });
 }
 
+function readBinaryFile(fileEntry, cb) {
+
+    fileEntry.file(function (file) {
+        var reader = new FileReader();
+
+        reader.onloadend = function() {
+            cb(this.result);
+        };
+
+        reader.readAsDataURL(file);
+
+    }, function () {alert('Failed to read selected image')});
+}
+
 function getFileDate() {
     var date = new Date();
     return date.getFullYear() +
@@ -65,4 +79,10 @@ function retrieveSavedMessages(cb) {
             readFile(fileEntry, cb);
         }, function () {alert("Failed to get file handle")});
     }, function () {alert("Failed to get filesystem access")});
+}
+
+function loadImageData(path, callback) {
+    window.resolveLocalFileSystemURL(path, function (fp) {
+        readBinaryFile(fp, callback);
+    }, function () {alert('Failed to get filesystem url')});
 }
