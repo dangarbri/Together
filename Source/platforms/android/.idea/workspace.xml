@@ -148,6 +148,10 @@
       <find>returnType</find>
     </findStrings>
   </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="KEY_STORE_PATH" value="C:\Users\Danny\YetAnotherFailure\key_store.jks" />
+    <option name="KEY_ALIAS" value="together" />
+  </component>
   <component name="GradleLocalSettings">
     <option name="myGradleHomes">
       <map>
@@ -3519,8 +3523,13 @@
   </component>
   <component name="PropertiesComponent">
     <property name="android.sdk.path" value="C:/Android" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../key_store.jks" />
     <property name="device.picker.selection" value="E1MGA2E7A2112924" />
+    <property name="ExportApk.ApkPath" value="C:\Users\Danny\YetAnotherFailure\Together\Source\platforms\android\app" />
+    <property name="ExportApk.Flavors" value="" />
+    <property name="ExportApk.BuildType" value="release" />
+    <property name="ExportApk.SignV1" value="true" />
+    <property name="ExportApk.SignV2" value="true" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
