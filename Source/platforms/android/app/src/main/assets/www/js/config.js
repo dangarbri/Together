@@ -9,4 +9,5 @@ var Configuration = {};
 Configuration.OPT_PICTURE_TYPE = "jpeg"
 
 // Quality of image given to the app from the camera
-Configuration.OPT_IMAGE_QUALITY = 50
+Configuration.OPT_IMAGE_WIDTH  = 1080
+Configuration.OPT_IMAGE_HEIGHT = 1920

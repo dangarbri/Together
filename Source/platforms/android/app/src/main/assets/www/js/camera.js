@@ -43,7 +43,8 @@ var Photos = {};
             destinationType: Camera.DestinationType.FILE_URI,
             encodingType: getEncoding(),
             saveToPhotoAlbum: true,
-            quality: Configuration.OPT_IMAGE_QUALITY
+            targetWidth: Configuration.OPT_IMAGE_WIDTH,
+            targetHeight: Configuration.OPT_IMAGE_HEIGHT
         });
     }
 
@@ -58,8 +59,9 @@ var Photos = {};
             destinationType: Camera.DestinationType.FILE_URI,
             encodingType: getEncoding(),
             sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-            quality: Configuration.OPT_IMAGE_QUALITY,
-            saveToPhotoAlbum: true
+            saveToPhotoAlbum: true,
+            targetWidth: Configuration.OPT_IMAGE_WIDTH,
+            targetHeight: Configuration.OPT_IMAGE_HEIGHT
         });
     }
 
