@@ -214,19 +214,12 @@ var messagebar = f7.messagebar.create({
 
 
 
-var gAreTheyTyping = false;
 function showTyping() {
-    if (!gAreTheyTyping) {
-        messages.showTyping();
-        gAreTheyTyping = true;
-    }
+    messages.showTyping();
 }
 
 function hideTyping() {
-    if (gAreTheyTyping) {
-        gAreTheyTyping = false;
-        messages.hideTyping();
-    }
+    messages.hideTyping();
 }
 
 /**
@@ -445,6 +438,7 @@ var app = {
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         document.addEventListener('resume', function () {
+            hideTyping();
             if (gIsInitialized) {
                 refreshMessages(true);
             }
@@ -465,6 +459,7 @@ var app = {
         retrieveSavedMessages(function (msgs) {
             messages.addMessages(msgs, 'append', false);
             Messenger.linkMessages();
+            hideTyping();
         })
 
         // Originally I intended for this to just be a getter

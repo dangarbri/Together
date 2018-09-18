@@ -8,6 +8,7 @@ if (DEBUG) {
 
 var SERVER_MESSAGE_ENDPOINT  = SERVER_BASE + "/message"; // Endpoint send/receive messages
 var SERVER_TYPING_ENDPOINT  = SERVER_BASE + "/message/typing"; // Endpoint send/receive messages
+var SERVER_TYPING_DONE_ENDPOINT  = SERVER_BASE + "/message/typing/done"; // Endpoint send/receive messages
 var SERVER_READ_ENDPOINT  = SERVER_BASE + "/message/read"; // Endpoint send/receive messages
 var SERVER_REGISTER_ENDPOINT = SERVER_BASE + "/device";  // Endpoint to login
 var SERVER_LOGIN_ENDPOINT  = SERVER_BASE + "/login";
@@ -48,5 +49,12 @@ var ServerApi = {};
                 alert('failed to send message, need to add handling here to let you retry');
             }
         })
+    }
+
+    api.FinishTyping = function () {
+        f7.request({
+            method: 'POST',
+            url: SERVER_TYPING_DONE_ENDPOINT
+        });
     }
 })(ServerApi);

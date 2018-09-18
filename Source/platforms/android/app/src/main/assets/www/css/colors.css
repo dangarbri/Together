@@ -1,0 +1,33 @@
+:root {
+    --theme-color: #4b16b7;
+    --send-color: #e6fdff;
+    --receive-color: #fbfaf8;
+}
+
+.md .navbar {
+    background: var(--theme-color);
+}
+
+.md .messagebar a.link i {
+    color: var(--theme-color);
+}
+
+.md .fab-buttons a, .md .fab > a {
+    background: var(--theme-color);
+}
+
+.md .message-sent .message-bubble {
+    background: var(--send-color);
+}
+
+.md .message-sent.message-tail .message-bubble::before {
+    border-bottom-color: var(--send-color);
+}
+
+.md .message-received .message-bubble {
+    background: var(--receive-color);
+}
+
+.md .message-received.message-tail .message-bubble::before {
+    border-bottom-color: var(--receive-color);
+}
