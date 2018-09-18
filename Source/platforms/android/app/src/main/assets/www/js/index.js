@@ -152,9 +152,6 @@ var messagebar = f7.messagebar.create({
     el: '.messagebar',
     attachmentsVisible: true,
     on: {
-        keypress: function () {
-            pingTyping();
-        },
         focus: function () {
             gScrollCheck = setInterval(function () {
                 messageWindow.scrollTop = messageWindow.scrollHeight;
@@ -166,6 +163,10 @@ var messagebar = f7.messagebar.create({
         },
     }
 });
+
+messagebar.textareaEl.addEventListener('keydown', function () {
+    pingTyping();
+})
 
   /*========================
     Handle Attachments
