@@ -33,7 +33,7 @@ var Messenger = {};
         var hours = now.getHours();
         // Set hours to 12 based instead of 24 hours based
         var ampm = "AM"
-        if (hours > 12) {
+        if (hours >= 12) {
             hours = hours - 12;
             ampm = "PM";
         }
