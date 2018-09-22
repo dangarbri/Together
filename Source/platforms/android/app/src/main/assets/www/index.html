@@ -36,13 +36,15 @@
             </div>
             <div class="navbar">
               <div class="navbar-inner">
+                <div class="left">
+                    <a href="#" id="js-menu-btn" class="link icon-only">
+                        <i class="icon f7-icons">bars</i>
+                    </a>
+                </div>
                 <div class="title">Messages</div>
                 <div class="right">
                   <a id="js-lock" href="#" class="link icon-only">
                     <i class="f7-icons">lock_fill</i>
-                  </a>
-                  <a href="/lists" class="link icon-only">
-                    <i class="f7-icons">lock_alt</i>
                   </a>
                 </div>
               </div>
@@ -102,6 +104,30 @@
           </div>
         </div>
       </div>
+
+
+      <!-- SIDEBAR MENU -->
+      <div id="js-menu-sidebar" class="panel panel-left panel-cover">
+          <div class="list">
+              <ul>
+                  <li>
+                    <a href="#" class="item-link">
+                      <div class="item-content">
+                          <div class="item-media">
+                              <i class="icon f7-icons">list</i>
+                          </div>
+                          <div class="item-inner">
+                              <div class="item-title">
+                                  Lists
+                              </div>
+                          </div>
+                      </div>
+                    </a>
+                  </li>
+              </ul>
+          </div>
+      </div>
+      <!-- END SIDEBAR MENU-->
     </div>
     <script type="text/javascript" src="cordova.js"></script>
     <!-- Path to Framework7 Library JS-->
@@ -116,6 +142,8 @@
     <script type="text/javascript" src="js/message_manager.js"></script>
     <script type="text/javascript" src="js/browser_messages.js"></script>
     <script type="text/javascript" src="js/camera.js"></script>
+    <script type="text/javascript" src="js/lists.js"></script>
+    <script type="text/javascript" src="js/menu.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
   </body>
 </html>

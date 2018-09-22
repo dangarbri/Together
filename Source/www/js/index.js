@@ -16,43 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// var f7 = new Framework7({
-//     // App root element
-//     root: '#app',
-//     // App Name
-//     name: 'Together',
-//     // App id
-//     id: 'com.dangarbri.together',
-//     // Enable swipe panel
-//     panel: {
-//       swipe: 'left',
-//     },
-//     // Add default routes
-//     routes: [
-//       {
-//         // path: '/about/',
-//         // url: 'about.html',
-//       },
-//     ],
-//     // ... other parameters
-//   });
-
-/** // API ITEMS TO REMEMBER
-    // Show typing indicator
-    messages.showTyping({
-        header: person.name + ' is typing',
-        avatar: person.avatar
-    });
-
-    // Add received dummy message
-    messages.addMessage({
-        text: answer,
-        type: 'received',
-        name: person.name,
-        avatar: person.avatar
-    });
-
- */
 
 function openLink(el) {
     console.log('opening ' + el.href);
@@ -210,9 +173,6 @@ var messagebar = f7.messagebar.create({
     messagebar.renderAttachments();
     checkAttachments();
   });
-
-
-
 
 var gAreTheyTyping = false;
 function showTyping() {
