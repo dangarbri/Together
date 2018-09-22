@@ -1,6 +1,12 @@
+v 0.2.4
+- Fix typing problem
+
+v 0.2.3
+- Purple theme
+
 v 0.2.2
 - Fix PM showing after 12 Noon
-
+- Update how typing notification works
 
 v 0.2.1
 - Update picture support to scale down images

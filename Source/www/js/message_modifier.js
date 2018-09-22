@@ -33,10 +33,15 @@ var Messenger = {};
         var hours = now.getHours();
         // Set hours to 12 based instead of 24 hours based
         var ampm = "AM"
+        // If time is 12:00 or up, it's PM since we're using 12-hour time
         if (hours >= 12) {
-            hours = hours - 12;
             ampm = "PM";
         }
+        // If time is 13:00 or up, change it to 12-hour time
+        if (hours > 12) {
+            hours = hours - 12;
+        }
+        
         var minutes = now.getMinutes();
         if (minutes < 10) {
             minutes = "0" + minutes;

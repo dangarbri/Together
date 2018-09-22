@@ -152,6 +152,9 @@ var messagebar = f7.messagebar.create({
     el: '.messagebar',
     attachmentsVisible: true,
     on: {
+        keypress: function () {
+            pingTyping();
+        },
         focus: function () {
             gScrollCheck = setInterval(function () {
                 messageWindow.scrollTop = messageWindow.scrollHeight;
@@ -163,10 +166,6 @@ var messagebar = f7.messagebar.create({
         },
     }
 });
-
-messagebar.textareaEl.addEventListener('keydown', function () {
-    pingTyping();
-})
 
   /*========================
     Handle Attachments
@@ -215,12 +214,19 @@ messagebar.textareaEl.addEventListener('keydown', function () {
 
 
 
+var gAreTheyTyping = false;
 function showTyping() {
-    messages.showTyping();
+    if (!gAreTheyTyping) {
+        messages.showTyping();
+        gAreTheyTyping = true;
+    }
 }
 
 function hideTyping() {
-    messages.hideTyping();
+    if (gAreTheyTyping) {
+        gAreTheyTyping = false;
+        messages.hideTyping();
+    }
 }
 
 /**
@@ -249,6 +255,9 @@ $$('.send-link').on('click', function () {
     var text = messagebar.getValue().replace(/\n/g, '<br>').trim();
     // return if empty message and no picutre
     if (!text.length && (messagebar.attachments.length == 0)) return;
+
+    // Stop sending typing ping
+    cancelTyping();
 
     // Get attachments
     var attachment = null;
@@ -390,8 +399,12 @@ function setupFCMPlugin() {
                 Messenger.markRead();
             } else if (data.action == "typing") {
                 showTyping();
-            } else if (data.action == "typing_done") {
-                hideTyping();
+                if (gTypingTimeout) {
+                    clearTimeout(gTypingTimeout);
+                }
+                gTypingTimeout = setTimeout(function () {
+                    hideTyping();
+                }, TYPING_TIMEOUT); // Hide typing after ~7.5 seconds, or if a message was received
             }
         });
     } else {
@@ -406,7 +419,6 @@ function setupFCMPlugin() {
 function cancelTyping() {
     if (gIsTyping) {
         clearTimeout(gPingTimeout);
-        ServerApi.FinishTyping();
         gIsTyping = false;
     }
 }
@@ -423,6 +435,15 @@ function pingTyping() {
             method: 'POST',
             url: SERVER_TYPING_ENDPOINT
         })
+        if (gPingTimeout) {
+            clearTimeout(gPingTimeout);
+        }
+        // if still typing after 5 seconds, ping again
+        gPingTimeout = setTimeout(function () {
+            if (gIsTyping) {
+                pingTyping();
+            }
+        }, TYPING_PING_INTERVAL)
     }
 }
 
@@ -439,7 +460,6 @@ var app = {
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         document.addEventListener('resume', function () {
-            hideTyping();
             if (gIsInitialized) {
                 refreshMessages(true);
             }
@@ -447,8 +467,7 @@ var app = {
         // saveMessages defined in message_manager.js
         document.addEventListener("pause", function () {
             saveMessages(messages.messages);
-            cancelTyping();
-            hideTyping();
+            gIsTyping = false; // onblur isn't enough I guess
         }, false);
     },
     // deviceready Event Handler
@@ -460,7 +479,6 @@ var app = {
         retrieveSavedMessages(function (msgs) {
             messages.addMessages(msgs, 'append', false);
             Messenger.linkMessages();
-            hideTyping();
         })
 
         // Originally I intended for this to just be a getter

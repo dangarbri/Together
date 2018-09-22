@@ -23681,10 +23681,7 @@
         return ("<div class=\"messages-title\"" + id + ">" + (message.text) + "</div>");
       }
 
-      var text = null;
-      if (message.text) {
-        var text = addLinks(message.text);
-      }
+      var text = addLinks(message.text);
 
       return ("\n      <div " +
                   id +
