@@ -5,5 +5,8 @@ var Lists = {};
 
     listBtn.addEventListener('click', function () {
         Menu.closeMenu();
+        setTimeout(function () {
+            alert(f7.views[0].name);
+        }, 1000)
     })
 })(Lists);

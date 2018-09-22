@@ -38,11 +38,15 @@ var f7 = new Framework7({
     routes: [{
         name: 'messages',
         path: '/',
-        url: '/index.html'
+        url: '/index.html',
+        pushState: true,
+        history: true
     }, {
         name: 'lists',
         path: '/lists',
-        url: './lists.html'
+        url: './lists.html',
+        pushState: true,
+        history: true
     }]
 });
 
@@ -414,6 +418,10 @@ function pingTyping() {
             }
         }, TYPING_PING_INTERVAL)
     }
+}
+
+function handleBackButton() {
+
 }
 
 var gIsInitialized = false;
