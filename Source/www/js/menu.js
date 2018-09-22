@@ -8,5 +8,9 @@ var Menu = {};
         f7.panel.open('left');
     }
 
+    Menu.closeMenu = function () {
+        f7.panel.close('left');
+    }
+
     menuBtn.addEventListener('click', Menu.openMenu);
 })(Menu)

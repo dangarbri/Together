@@ -34,7 +34,16 @@ var f7 = new Framework7({
     toast: {
         closeTimeout: 1500,
         closeButton: true,
-    }
+    },
+    routes: [{
+        name: 'messages',
+        path: '/',
+        url: '/index.html'
+    }, {
+        name: 'lists',
+        path: '/lists',
+        url: './lists.html'
+    }]
 });
 
 var mainView = f7.views.create('.view-main');
