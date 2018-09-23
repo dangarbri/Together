@@ -38,19 +38,25 @@ var f7 = new Framework7({
     routes: [{
         name: 'messages',
         path: '/',
-        url: '/index.html',
+        url: './index.html',
         pushState: true,
-        history: true
+        history: true,
+        on: {
+            pageInit: loadSavedMessages
+        }
     }, {
         name: 'lists',
         path: '/lists',
         url: './lists.html',
         pushState: true,
-        history: true
+        history: true,
+        on: {
+            pageInit: Lists.Initialize
+        }
     }]
 });
 
-var mainView = f7.views.create('.view-main');
+f7.mainView = f7.views.create('.view-main');
 
 var $$ = Dom7;
 
@@ -424,6 +430,16 @@ function handleBackButton() {
 
 }
 
+/**
+ * Load saved messages on page load
+ */
+function loadSavedMessages() {
+    retrieveSavedMessages(function (msgs) {
+        messages.addMessages(msgs, 'append', false);
+        Messenger.linkMessages();
+    })
+}
+
 var gIsInitialized = false;
 var app = {
     // Application Constructor
@@ -453,10 +469,7 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
-        retrieveSavedMessages(function (msgs) {
-            messages.addMessages(msgs, 'append', false);
-            Messenger.linkMessages();
-        })
+        loadSavedMessages();
 
         // Originally I intended for this to just be a getter
         // But I ended up implementing it to handle all the login stuff.
@@ -468,6 +481,8 @@ var app = {
             encryptorInit();
             gIsInitialized = true;
         });
+
+        Menu.initialize();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {

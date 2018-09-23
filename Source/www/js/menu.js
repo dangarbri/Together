@@ -1,16 +1,38 @@
 var Menu = {};
 
 (function (Menu) {
-    var menuBtn = document.getElementById('js-menu-btn');
-    var menuSidebar = document.getElementById('js-menu-sidebar');
 
+    /**
+     * Menu element accessors
+     */
+    Menu.Item = {
+        ListsLink: document.getElementById('js-menu-list')
+    }
+
+    /**
+     * Open menu panel
+     */
     Menu.openMenu = function () {
         f7.panel.open('left');
     }
 
+    /**
+     * Close menu panel
+     */
     Menu.closeMenu = function () {
         f7.panel.close('left');
     }
 
-    menuBtn.addEventListener('click', Menu.openMenu);
+    /**
+     * Perform menu initialization.
+     * Mainly button listeners
+     * Close menu after link click
+     */
+    Menu.initialize = function () {
+        var menuBtn = document.getElementById('js-menu-btn');
+        menuBtn.addEventListener('click', Menu.openMenu);
+        Object.keys(Menu.Item).forEach(function (key) {
+            Menu.Item[key].addEventListener('click', Menu.closeMenu);
+        });
+    };
 })(Menu)
