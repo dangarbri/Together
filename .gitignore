@@ -24,3 +24,7 @@ Source/platforms/browser/www/js/framework7.js
 Source/platforms/browser/www/js/index.js
 Source/platforms/browser/www/js/message_modifier.js
 Source/platforms/browser/www/js/server.js
+Source/platforms/android/app/src/main/assets/www/js/lists.js
+Source/platforms/android/app/src/main/assets/www/index.html
+Source/platforms/android/app/src/main/assets/www/js/index.js
+Source/platforms/android/app/src/main/assets/www/js/menu.js
