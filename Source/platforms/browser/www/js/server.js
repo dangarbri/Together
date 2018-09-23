@@ -54,7 +54,20 @@ var ServerApi = {};
     api.GetListItems = function (callback) {
         f7.request({
             method: 'GET',
-            url: SERVER_LISTS_ENDPOINT
+            url: SERVER_LISTS_ENDPOINT,
+            dataType: 'json',
+            success: callback
         });
+    }
+
+    api.PostListItems = function (list) {
+        f7.request({
+            method: 'POST',
+            url: SERVER_LISTS_ENDPOINT,
+            data: list,
+            error: function (data) {
+                alert('Failed to update lists');
+            }
+        })
     }
 })(ServerApi);

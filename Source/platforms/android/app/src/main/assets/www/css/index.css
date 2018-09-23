@@ -104,3 +104,20 @@ body {
     font-feature-settings: "liga";
     text-align: center;
   }
+
+#list-input {
+    margin: 0;
+}
+
+#list-content {
+    margin-top: 0;
+}
+
+.sub-list ul li {
+    padding-left: 32px !important;
+}
+
+.li-strikethrough {
+    color: #ccc;
+    text-decoration: line-through;
+}

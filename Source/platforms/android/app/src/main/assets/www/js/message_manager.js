@@ -1,4 +1,5 @@
 var MESSAGE_FILE = "messages";
+var LISTS_FILE   = "lists";
 
 function readFile(fileEntry, cb) {
     fileEntry.file(function (file) {
@@ -77,6 +78,15 @@ function retrieveSavedMessages(cb) {
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
         fs.root.getFile(MESSAGE_FILE, { create: true, exclusive: false }, function (fileEntry) {
             readFile(fileEntry, cb);
+        }, function () {alert("Failed to get file handle")});
+    }, function () {alert("Failed to get filesystem access")});
+}
+
+function saveLists(lists) {
+    var fname = cordova.file.applicationStorageDirectory + "/" + LISTS_FILE;
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
+        fs.root.getFile(LISTS_FILE, { create: true, exclusive: false }, function (fileEntry) {
+            writeFile(fileEntry, JSON.stringify(lists));
         }, function () {alert("Failed to get file handle")});
     }, function () {alert("Failed to get filesystem access")});
 }
