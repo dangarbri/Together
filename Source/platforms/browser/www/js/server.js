@@ -1,4 +1,4 @@
-var DEBUG = 0;
+var DEBUG = 1;
 
 if (DEBUG) {
     var SERVER_BASE = "http://192.168.0.33";
@@ -7,13 +7,14 @@ if (DEBUG) {
 }
 
 var SERVER_MESSAGE_ENDPOINT  = SERVER_BASE + "/message"; // Endpoint send/receive messages
-var SERVER_TYPING_ENDPOINT  = SERVER_BASE + "/message/typing"; // Endpoint send/receive messages
-var SERVER_READ_ENDPOINT  = SERVER_BASE + "/message/read"; // Endpoint send/receive messages
+var SERVER_TYPING_ENDPOINT   = SERVER_BASE + "/message/typing"; // Endpoint send/receive messages
+var SERVER_READ_ENDPOINT     = SERVER_BASE + "/message/read"; // Endpoint send/receive messages
 var SERVER_REGISTER_ENDPOINT = SERVER_BASE + "/device";  // Endpoint to login
-var SERVER_LOGIN_ENDPOINT  = SERVER_BASE + "/login";
-var SERVER_LOGOUT_ENDPOINT = SERVER_BASE + "/logout";
-var SERVER_PING_ENDPOINT = SERVER_BASE + "/device";
-var SERVER_PAIRING_ENDPOINT = SERVER_BASE + "/pair";
+var SERVER_LOGIN_ENDPOINT    = SERVER_BASE + "/login";
+var SERVER_LOGOUT_ENDPOINT   = SERVER_BASE + "/logout";
+var SERVER_PING_ENDPOINT     = SERVER_BASE + "/device";
+var SERVER_PAIRING_ENDPOINT  = SERVER_BASE + "/pair";
+var SERVER_LISTS_ENDPOINT    = SERVER_BASE + "/lists";
 
 var ServerApi = {};
 (function (api) {
@@ -48,5 +49,12 @@ var ServerApi = {};
                 alert('failed to send message, need to add handling here to let you retry');
             }
         })
+    }
+
+    api.GetListItems = function (callback) {
+        f7.request({
+            method: 'GET',
+            url: SERVER_LISTS_ENDPOINT
+        });
     }
 })(ServerApi);

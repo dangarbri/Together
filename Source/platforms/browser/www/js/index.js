@@ -16,43 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// var f7 = new Framework7({
-//     // App root element
-//     root: '#app',
-//     // App Name
-//     name: 'Together',
-//     // App id
-//     id: 'com.dangarbri.together',
-//     // Enable swipe panel
-//     panel: {
-//       swipe: 'left',
-//     },
-//     // Add default routes
-//     routes: [
-//       {
-//         // path: '/about/',
-//         // url: 'about.html',
-//       },
-//     ],
-//     // ... other parameters
-//   });
-
-/** // API ITEMS TO REMEMBER
-    // Show typing indicator
-    messages.showTyping({
-        header: person.name + ' is typing',
-        avatar: person.avatar
-    });
-
-    // Add received dummy message
-    messages.addMessage({
-        text: answer,
-        type: 'received',
-        name: person.name,
-        avatar: person.avatar
-    });
-
- */
 
 function openLink(el) {
     console.log('opening ' + el.href);
@@ -71,10 +34,29 @@ var f7 = new Framework7({
     toast: {
         closeTimeout: 1500,
         closeButton: true,
-    }
+    },
+    routes: [{
+        name: 'messages',
+        path: '/',
+        url: './index.html',
+        pushState: true,
+        history: true,
+        on: {
+            pageInit: loadSavedMessages
+        }
+    }, {
+        name: 'lists',
+        path: '/lists',
+        url: './lists.html',
+        pushState: true,
+        history: true,
+        on: {
+            pageInit: Lists.Initialize
+        }
+    }]
 });
 
-var mainView = f7.views.create('.view-main');
+f7.mainView = f7.views.create('.view-main');
 
 var $$ = Dom7;
 
@@ -210,9 +192,6 @@ var messagebar = f7.messagebar.create({
     messagebar.renderAttachments();
     checkAttachments();
   });
-
-
-
 
 var gAreTheyTyping = false;
 function showTyping() {
@@ -447,6 +426,20 @@ function pingTyping() {
     }
 }
 
+function handleBackButton() {
+
+}
+
+/**
+ * Load saved messages on page load
+ */
+function loadSavedMessages() {
+    retrieveSavedMessages(function (msgs) {
+        messages.addMessages(msgs, 'append', false);
+        Messenger.linkMessages();
+    })
+}
+
 var gIsInitialized = false;
 var app = {
     // Application Constructor
@@ -476,10 +469,7 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
-        retrieveSavedMessages(function (msgs) {
-            messages.addMessages(msgs, 'append', false);
-            Messenger.linkMessages();
-        })
+        loadSavedMessages();
 
         // Originally I intended for this to just be a getter
         // But I ended up implementing it to handle all the login stuff.
@@ -491,6 +481,8 @@ var app = {
             encryptorInit();
             gIsInitialized = true;
         });
+
+        Menu.initialize();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {

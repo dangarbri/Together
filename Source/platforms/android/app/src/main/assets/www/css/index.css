@@ -21,15 +21,21 @@
 }
 
 body {
-    /* -webkit-touch-callout: none;                  prevent callout to copy image, etc when tap to hold */
+    -webkit-touch-callout: none;                  /*prevent callout to copy image, etc when tap to hold*/
     -webkit-text-size-adjust: none;               /* prevent webkit from resizing text to fit */
-    -webkit-user-select: text;                    /* prevent copy paste, to allow, change 'none' to 'text' */
-    user-select: text;
+    -webkit-user-select: none;                    /* prevent copy paste, to allow, change 'none' to 'text' */
+    user-select: none;
 }
 
 .navbar {
     user-select: none;
     -webkit-user-select: none;
+}
+
+.message-text {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: auto;
 }
 
 .message-footer {
