@@ -91,6 +91,15 @@ function saveLists(lists) {
     }, function () {alert("Failed to get filesystem access")});
 }
 
+function readLists(callback) {
+    var fname = cordova.file.applicationStorageDirectory + "/" + LISTS_FILE;
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
+        fs.root.getFile(LISTS_FILE, { create: true, exclusive: false }, function (fileEntry) {
+            readFile(fileEntry, callback);
+        }, function () {alert("Failed to get file handle")});
+    }, function () {alert("Failed to get filesystem access")});
+}
+
 function loadImageData(path, callback) {
     window.resolveLocalFileSystemURL(path, function (fp) {
         readBinaryFile(fp, callback);

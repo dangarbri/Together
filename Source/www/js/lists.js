@@ -114,13 +114,18 @@ var Lists = {};
     /**
      * 
      * @param {string} list Name of list we're adding to
+     * @param {string} val May be null, if inputEl is null, then val will be checked as well.
      */
-    Lists.AddListItem = function(list) {
+    Lists.AddListItem = function(list, val) {
         var container = document.getElementById('js-' + list);
         var inputEl   = document.getElementById('js-' + list + '-input');
         value = inputEl.value.trim();
         if (value === "") {
-            return;
+            if (val == null) {
+                return;
+            } else {
+                value = val;
+            }
         }
         var listItem = `<li class="item-content" onclick="Lists.ToggleStrikethrough(this)">
                             <div class="item-inner">
@@ -139,7 +144,7 @@ var Lists = {};
 
         // Add to json data
         CreateListItem(list, value);
-        console.log(ListContent);
+        console.log(JSON.stringify(ListContent));
     }
 
     /**
@@ -185,15 +190,25 @@ var Lists = {};
     /**
      * Removes the list item from the page
      * @param {HTML El} item button inside the list item to remove
+     * @param {string} list May be used instead of item, must also pass in value
+     * @param {string} value May be used instead of item, must also pass in list
      */
-    Lists.RemoveItem = function (item) {
+    Lists.RemoveItem = function (item, list, value) {
         // Get text content to remove from JSON
-        var list = item.getAttribute('data-list');
-        var listItem = item.getAttribute('data-value');
+        if (item) {
+            var list  = item.getAttribute('data-list');
+            var value = item.getAttribute('data-value');
+        } else {
+            item = document.querySelector('[data-list="' + list + '"][data-value="' + value + '"]')
+            if (!item) {
+                // Already removed from DOM
+                return;
+            }
+        }
         // Remove from DOM
         item.parentNode.parentNode.remove();
         // Remove from JSON
-        ListContent[list][listItem].Removed = true;
+        ListContent[list][value].Removed = true;
     }
 
     /**
@@ -206,8 +221,10 @@ var Lists = {};
         var newListBtn   = document.getElementById('js-list-new-btn');
         if (!addedListener) {
             listBtn.addEventListener('click', function () {
-                SaveToFile();
                 f7.mainView.router.back();
+                // Erase since DOM is all removed.
+                // Will restore from file when re-opened.
+                Lists.SaveToFile(true);
             });
 
             newListBtn.addEventListener('click', function () {
@@ -230,9 +247,15 @@ var Lists = {};
 
     /**
      * Save lists to file
+     * 
+     * @param {boolean} clearData - if clearData = true, ListContent will be erased.
      */
-    function SaveToFile() {
-        saveLists(ListContent);
+    Lists.SaveToFile = function (clearData) {
+        var dataCopy = JSON.parse(JSON.stringify(ListContent));
+        saveLists(dataCopy);
+        if (clearData) {
+            ListContent = {};
+        }
     }
 
     function MergeList(partnerLists) {
@@ -253,8 +276,17 @@ var Lists = {};
             Object.keys(partnerLists[list]).forEach(function (item) {
                 // If item doesn't exist, add it
                 if (!ListContent[list][item]) {
-                    Lists.AddListItem(list, item);
+                    // Only really add it if the item has not been removed
+                    // Now it will never exist.
+                    if (!partnerLists[list][item].Removed) {
+                        Lists.AddListItem(list, item);
+                        // Now check strikethrough
+                        if (partnerLists[list][item].Strikethrough) {
+
+                        }
+                    }
                 } else {
+                    // Item is already in DOM, need to update timestamp
                     // Compare timestamps
                     var partnerTime = new Date(partnerLists[list][item].Time);
                     var localTime   = new Date(ListContent[list][item].Time);
@@ -268,16 +300,28 @@ var Lists = {};
     }
 
     /**
-     * Pull new list items from server and merge them into local copy.
+     * Pull new list items from ServerApi and merge them into local copy.
      */
     Lists.Sync = function () {
-        Server.GetListItems(MergeList);
+        ServerApi.GetListItems(MergeList);
     }
 
     /**
      * Posts the list to the paired device
      */
     Lists.PostList = function () {
-        Server.PostListItems(ListContent);
+        ServerApi.PostListItems(ListContent);
+    }
+
+    /**
+     * Function called when app is paused
+     */
+    Lists.onPause = function () {
+        // If we're not on lists page, then lists should already have been saved.
+        // But if we are on lists, then we need to save to file NOW
+        if (Menu.GetPage != Menu.Pages.LISTS) {
+            // Don't clear data, since if we resume, it could still be in the DOM.
+            Lists.SaveToFile(false);
+        }
     }
 })(Lists);

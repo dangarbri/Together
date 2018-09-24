@@ -2,6 +2,11 @@ var Menu = {};
 
 (function (Menu) {
 
+    Menu.Pages = {
+        MESSAGES: 'messages',
+        LISTS: 'lists'
+    }
+
     /**
      * Menu element accessors
      */
@@ -35,4 +40,10 @@ var Menu = {};
             Menu.Item[key].addEventListener('click', Menu.closeMenu);
         });
     };
+
+    Menu.GetPage = function () {
+        var page = f7.mainView.router.url;
+        var words = page.split('/');
+        return words[words.length - 1];
+    }
 })(Menu)

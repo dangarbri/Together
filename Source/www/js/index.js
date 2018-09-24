@@ -37,7 +37,7 @@ var f7 = new Framework7({
     },
     routes: [{
         name: 'messages',
-        path: '/',
+        path: '/' + Menu.Pages.MESSAGES,
         url: './index.html',
         pushState: true,
         history: true,
@@ -46,7 +46,7 @@ var f7 = new Framework7({
         }
     }, {
         name: 'lists',
-        path: '/lists',
+        path: '/' + Menu.Pages.LISTS,
         url: './lists.html',
         pushState: true,
         history: true,
@@ -56,7 +56,7 @@ var f7 = new Framework7({
     }]
 });
 
-f7.mainView = f7.views.create('.view-main');
+f7.mainView = f7.views.create('.view-main', {url: '/messages'});
 
 var $$ = Dom7;
 
@@ -460,7 +460,8 @@ var app = {
         // saveMessages defined in message_manager.js
         document.addEventListener("pause", function () {
             saveMessages(messages.messages);
-            gIsTyping = false; // onblur isn't enough I guess
+            cancelTyping();
+            Lists.onPause();
         }, false);
     },
     // deviceready Event Handler
