@@ -235,9 +235,6 @@ $$('.send-link').on('click', function () {
     // return if empty message and no picutre
     if (!text.length && (messagebar.attachments.length == 0)) return;
 
-    // Stop sending typing ping
-    cancelTyping();
-
     // Get attachments
     var attachment = null;
     if (messagebar.attachments.length > 0) {
@@ -401,8 +398,10 @@ function setupFCMPlugin() {
  */
 function cancelTyping() {
     if (gIsTyping) {
-        clearTimeout(gPingTimeout);
-        gIsTyping = false;
+        f7.request({
+            method: 'POST',
+            url: SERVER_TYPING_DONE_ENDPOINT
+        });
     }
 }
 
@@ -410,23 +409,13 @@ function cancelTyping() {
  * Just ping the server's typing endpoint, if we're authenticated it will send
  * a notification to the other user that we're typing
  */
-var gPingTimeout = null;
 function pingTyping() {
     if (!gIsTyping) {
         gIsTyping = true;
         f7.request({
             method: 'POST',
             url: SERVER_TYPING_ENDPOINT
-        })
-        if (gPingTimeout) {
-            clearTimeout(gPingTimeout);
-        }
-        // if still typing after 5 seconds, ping again
-        gPingTimeout = setTimeout(function () {
-            if (gIsTyping) {
-                pingTyping();
-            }
-        }, TYPING_PING_INTERVAL)
+        });
     }
 }
 
