@@ -263,8 +263,6 @@ var Lists = {};
      */
     function LoadFromFile() {
         readLists(function (data) {
-            // MergeList(data);
-            data = JSON.parse("{\"Beep\":{\"Sync with nothing works...\":{\"Strikethrough\":false,\"Removed\":false,\"Time\":\"2018-09-29T17:20:21.214Z\"},\"But what about something\":{\"Strikethrough\":false,\"Removed\":false,\"Time\":\"2018-09-29T17:20:25.581Z\"}}}")
             MergeList(data);
             Lists.Sync();
         })
@@ -381,7 +379,7 @@ var Lists = {};
     Lists.onPause = function () {
         // If we're not on lists page, then lists should already have been saved.
         // But if we are on lists, then we need to save to file NOW
-        if (Menu.GetPage != Menu.Pages.LISTS) {
+        if (Menu.GetPage == Menu.Pages.LISTS) {
             // Don't clear data, since if we resume, it could still be in the DOM.
             Lists.SaveToFile(false);
         }
