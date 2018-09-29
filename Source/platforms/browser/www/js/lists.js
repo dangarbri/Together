@@ -301,6 +301,7 @@ var Lists = {};
             Object.keys(partnerLists[list]).forEach(function (item) {
                 // If item doesn't exist, add it
                 if (!ListContent[list][item]) {
+                    ListContent[list][item] = partnerLists[list][item]
                     // Only really add it if the item has not been removed
                     // Now it will never exist.
                     if (!partnerLists[list][item].Removed) {
