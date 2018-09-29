@@ -435,8 +435,10 @@ function handleBackButton() {
  */
 function loadSavedMessages() {
     retrieveSavedMessages(function (msgs) {
-        messages.addMessages(msgs, 'append', false);
-        Messenger.linkMessages();
+        if (msgs) {
+            messages.addMessages(msgs, 'append', false);
+            Messenger.linkMessages();
+        }
     })
 }
 

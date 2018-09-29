@@ -60,11 +60,11 @@ var ServerApi = {};
         });
     }
 
-    api.PostListItems = function (list) {
+    api.PostListItems = function (listUpdates) {
         f7.request({
             method: 'POST',
             url: SERVER_LISTS_ENDPOINT,
-            data: list,
+            data: {list: JSON.stringify(listUpdates)},
             error: function (data) {
                 alert('Failed to update lists');
             }

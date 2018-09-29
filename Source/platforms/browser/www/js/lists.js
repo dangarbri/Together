@@ -45,6 +45,7 @@ var Lists = {};
 
 (function (Lists) {
     var addedListener = false;
+    var gSyncing = false;
     /**
      * Global list object. Contains info on all the list content
      */
@@ -56,6 +57,7 @@ var Lists = {};
      */
     function CreateList(name) {
         ListContent[name] = {};
+        Lists.PostList();
     }
 
     /**
@@ -115,10 +117,15 @@ var Lists = {};
      * 
      * @param {string} list Name of list we're adding to
      * @param {string} val May be null, if inputEl is null, then val will be checked as well.
+     * @param {bool} strikethrough - optional param, add the item already stricken
      */
-    Lists.AddListItem = function(list, val) {
+    var gLocalCount = 0; // for generating unique ids for auto-strikethrough
+    Lists.AddListItem = function(list, val, strikethrough) {
         var container = document.getElementById('js-' + list);
         var inputEl   = document.getElementById('js-' + list + '-input');
+        if (typeof(strikethrough) === "undefined") {
+            strikethrough = false;
+        }
         value = inputEl.value.trim();
         if (value === "") {
             if (val == null) {
@@ -127,7 +134,7 @@ var Lists = {};
                 value = val;
             }
         }
-        var listItem = `<li class="item-content" onclick="Lists.ToggleStrikethrough(this)">
+        var listItem = `<li class="item-content" onclick="Lists.ToggleStrikethrough(this)" data-pre-strikethrough="`+ strikethrough +`">
                             <div class="item-inner">
                                 <div class="item-title">
                                     ` + value + `
@@ -144,7 +151,7 @@ var Lists = {};
 
         // Add to json data
         CreateListItem(list, value);
-        console.log(JSON.stringify(ListContent));
+        Lists.PostList();
     }
 
     /**
@@ -185,6 +192,7 @@ var Lists = {};
             parent.getElementsByTagName('li')[0].after(listItem);
             ListContent[list][item].Strikethrough = false;
         }
+        Lists.PostList();
     }
     
     /**
@@ -209,6 +217,7 @@ var Lists = {};
         item.parentNode.parentNode.remove();
         // Remove from JSON
         ListContent[list][value].Removed = true;
+        Lists.PostList();
     }
 
     /**
@@ -231,8 +240,8 @@ var Lists = {};
                 AddNewList(newListInput.value.trim());
                 newListInput.value = "";
             })
+            LoadFromFile();
         }
-        LoadFromFile();
     }
 
     /**
@@ -279,11 +288,8 @@ var Lists = {};
                     // Only really add it if the item has not been removed
                     // Now it will never exist.
                     if (!partnerLists[list][item].Removed) {
-                        Lists.AddListItem(list, item);
-                        // Now check strikethrough
-                        if (partnerLists[list][item].Strikethrough) {
-
-                        }
+                        var strikethrough = partnerLists[list][item].Strikethrough;
+                        Lists.AddListItem(list, item, strikethrough);
                     }
                 } else {
                     // Item is already in DOM, need to update timestamp
@@ -297,20 +303,37 @@ var Lists = {};
                 }
             });
         });
-    }
 
+        // Items added to DOM with strikethough attribute will have the pre-strikethrough set
+        // So we need to get the element to run the actual strikethough udpate
+        document.querySelectorAll('[data-pre-strikethrough=true]').forEach(function (li) {
+            Lists.ToggleStrikethrough(li);
+            li.setAttribute('data-pre-strikethrough', false);
+        });
+    }
+    
     /**
      * Pull new list items from ServerApi and merge them into local copy.
      */
     Lists.Sync = function () {
-        ServerApi.GetListItems(MergeList);
+        ServerApi.GetListItems(function (data) {
+            gSyncing = true;
+            // Need to double parse data because I couldn't get it to post
+            // to the server properly without stringifying it
+            data = JSON.parse(data);
+            MergeList(data);
+            gSyncing = false;
+        });
     }
 
     /**
      * Posts the list to the paired device
      */
     Lists.PostList = function () {
-        ServerApi.PostListItems(ListContent);
+        if (!gSyncing)
+        {
+            ServerApi.PostListItems(ListContent);
+        }
     }
 
     /**

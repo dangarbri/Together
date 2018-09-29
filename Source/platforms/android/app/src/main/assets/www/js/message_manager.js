@@ -9,6 +9,8 @@ function readFile(fileEntry, cb) {
             console.log("Successful file read, running callback");
             if (this.result) {
                 cb(JSON.parse(this.result));
+            } else {
+                cb(null);
             }
         };
 
