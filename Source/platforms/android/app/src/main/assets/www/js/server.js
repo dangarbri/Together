@@ -56,16 +56,28 @@ var ServerApi = {};
         f7.request({
             method: 'GET',
             url: SERVER_LISTS_ENDPOINT,
-            dataType: 'json',
-            success: callback
+            success: function (data) {
+                if (!data) {
+                    return;
+                }
+
+                console.log("Retrieved list");
+                var decryptedList = decryptMessage(data);
+                var list = JSON.parse(decryptedList);
+                callback(list);
+            },
+            error: function (e) {
+                alert("Error syncing lists");
+            }
         });
     }
 
     api.PostListItems = function (listUpdates) {
+        var encryptedList = encryptMesage(JSON.stringify(listUpdates));
         f7.request({
             method: 'POST',
             url: SERVER_LISTS_ENDPOINT,
-            data: {list: JSON.stringify(listUpdates)},
+            data: {list: encryptedList},
             error: function (data) {
                 alert('Failed to update lists');
             }
