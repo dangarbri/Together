@@ -333,6 +333,10 @@ function refreshMessages(notify) {
             });
             messageWindow.scrollTop = messageWindow.scrollHeight;
 
+            if (data.read) {
+                Messenger.markRead();
+            }
+
             // Handle browser stuff
             // if (data.read) {
             //     BrowserMessenger.markRead();
@@ -438,6 +442,8 @@ function loadSavedMessages() {
         if (msgs) {
             messages.addMessages(msgs, 'append', false);
             Messenger.linkMessages();
+            gIsTyping = true;
+            cancelTyping();
         }
     })
 }
@@ -472,7 +478,7 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
-        loadSavedMessages();
+        // loadSavedMessages();
 
         // Originally I intended for this to just be a getter
         // But I ended up implementing it to handle all the login stuff.

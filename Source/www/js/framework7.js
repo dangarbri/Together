@@ -23658,14 +23658,18 @@
      */
     function addLinks(message) {
       // Split by spaces, urls don't have spaces
-      var words = message.split(' ');
+      if (message) {
+        var words = message.split(' ');
 
-      for (var i = 0; i < words.length; i++) {
-        if (words[i].startsWith('http://') || words[i].startsWith('https://')) {
-          words[i] = "<a target=\"_blank\" onclick=\"openLink(this)\" href=\"" + words[i] + "\">" + words[i] + "</a>";
+        for (var i = 0; i < words.length; i++) {
+          if (words[i].startsWith('http://') || words[i].startsWith('https://')) {
+            words[i] = "<a target=\"_blank\" onclick=\"openLink(this)\" href=\"" + words[i] + "\">" + words[i] + "</a>";
+          }
         }
+        return words.join(' ');
+      } else {
+        return message;
       }
-      return words.join(' ');
     }
 
     Messages.prototype.renderMessage = function renderMessage (messageToRender, messageId) {
@@ -23959,7 +23963,7 @@
           m.messages[method === 'append' ? 'push' : 'unshift'](messageToAdd);
         }
         messageToAdd.id = messageId++;
-        console.log("Creating message with id: " + messageToAdd.id);
+        console.log("Creating message: #" + messageToAdd.id);
         messagesHTML += m.renderMessage(messageToAdd, messageToAdd.id);
       });
       var $messagesEls = $(messagesHTML);
