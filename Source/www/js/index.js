@@ -134,13 +134,11 @@ var messagebar = f7.messagebar.create({
     el: '.messagebar',
     attachmentsVisible: true,
     on: {
-        keypress: function () {
-            pingTyping();
-        },
         focus: function () {
-            gScrollCheck = setInterval(function () {
+            pingTyping();
+            gScrollCheck = setTimeout(function () {
                 messageWindow.scrollTop = messageWindow.scrollHeight;
-            }, 200);
+            }, 500);
         },
         blur: function () {
             clearInterval(gScrollCheck);
@@ -316,10 +314,6 @@ function refreshMessages(notify) {
         // On success mark the message as sent
         success: function (data) {
             var msgs = data.messages;
-            if (gTypingTimeout) {
-                clearTimeout(gTypingTimeout);
-                hideTyping();
-            }
             msgs.forEach(function (message) {
                 var decryptedMessage = decryptMessage(message.message);
                 var image = null;
@@ -379,12 +373,8 @@ function setupFCMPlugin() {
                 Messenger.markRead();
             } else if (data.action == "typing") {
                 showTyping();
-                if (gTypingTimeout) {
-                    clearTimeout(gTypingTimeout);
-                }
-                gTypingTimeout = setTimeout(function () {
-                    hideTyping();
-                }, TYPING_TIMEOUT); // Hide typing after ~7.5 seconds, or if a message was received
+            } else if (data.action == "typing_done") {
+                hideTyping();
             }
         });
     } else {
@@ -398,6 +388,7 @@ function setupFCMPlugin() {
  */
 function cancelTyping() {
     if (gIsTyping) {
+        gIsTyping = false;
         f7.request({
             method: 'POST',
             url: SERVER_TYPING_DONE_ENDPOINT
@@ -431,8 +422,7 @@ function loadSavedMessages() {
         if (msgs) {
             messages.addMessages(msgs, 'append', false);
             Messenger.linkMessages();
-            gIsTyping = true;
-            cancelTyping();
+            hideTyping();
         }
     })
 }

@@ -194,6 +194,14 @@ var Lists = {};
         }
         Lists.PostList();
     }
+
+    function GetElement(list, value) {
+        item = document.querySelector('[data-list="' + list + '"][data-value="' + value + '"]')
+        if (item) {
+            return item.parentNode.parentNode;
+        }
+        return null;
+    }
     
     /**
      * Removes the list item from the page
@@ -292,12 +300,19 @@ var Lists = {};
                         Lists.AddListItem(list, item, strikethrough);
                     }
                 } else {
-                    // Item is already in DOM, need to update timestamp
+                    // Item is already in DOM, need to
                     // Compare timestamps
                     var partnerTime = new Date(partnerLists[list][item].Time);
                     var localTime   = new Date(ListContent[list][item].Time);
                     if (partnerTime > localTime) {
                         ListContent[list][item] = partnerLists[list][item];
+                        if (partnerLists[list][item].Strikethrough) {
+                            var el = GetElement(list, item);
+                            Lists.ToggleStrikethrough(el);
+                        }
+                        if (partnerLists[list][item].Removed) {
+                            Lists.RemoveItem(null, list, item);
+                        }
                     }
                     // Else, local is more recent. Wait for partner to sync
                 }
