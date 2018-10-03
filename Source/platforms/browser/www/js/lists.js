@@ -21,8 +21,10 @@
  *   Properties:
  *      Name - String - name of the list
  *      Items - Array - Array of ListItems
+ *      Removed - bool - indicates the whole list has been removed
+ *      Timestamp - date - indicates when the list was removed
  *   Format:
- *      { Name: Items }
+ *      [Name] = Items
  *      
  * 
  * Object ListItem:
@@ -32,7 +34,7 @@
  *      Removed - bool - determine if item has been deleted from the list
  *      Time - Date String - last updated timestamp, turn into Date object with new Date(string)
  *   Format:
- *      { Text: {Strikethrough: boolean, Removed: boolean, Time: Date} }
+ *      [Text] = {Strikethrough: boolean, Removed: boolean, Time: Date} }
  *     
  * List Sync Flow:
  *      Lists need to stay in sync between devices.
@@ -58,7 +60,11 @@ var Lists = {};
      * @param {string} name - name of new list
      */
     function CreateList(name) {
-        ListContent[name] = {};
+        ListContent[name] = {
+            items: {},
+            Time: new Date(),
+            Removed: false
+        };
         Lists.PostList();
     }
 
@@ -68,24 +74,75 @@ var Lists = {};
      * @param {string} text - text for list item
      */
     function CreateListItem(list, text) {
-        ListContent[list][text] = {
+        ListContent[list]['items'][text] = {
             Strikethrough: false,
             Removed: false,
             Time: new Date()
         }
+        console.log("Updated list items")
+        console.log(JSON.stringify(ListContent));
+    }
+
+    /**
+     * Removes list from from ListContent
+     * 
+     * @param {num} id id for the list to remove, title will be looked up
+     * @param {string} id list title
+     */
+    function RemoveList(id) {
+        if (typeof(id) === "number") {
+            var title = GetListTitle(id);
+            ListContent[title].Removed = true;
+            ListContent[title].Time = new Date();
+            document.getElementById('js-list-' + id).remove();
+            Lists.PostList();
+        } else if (typeof(id) === "string") {
+            ListContent[id].Removed = true;
+            ListContent[id].Time = new Date();
+            document.querySelector('[data-title=' + id + ']').remove();
+            Lists.PostList();
+        }
+    }
+
+    /**
+     * Retrieves the list title based on the id
+     * 
+     * @param {num} id id for the list
+     */
+    function GetListTitle(id) {
+        return document.getElementById('js-list-' + id).getElementsByClassName('item-title')[0].textContent;
+    }
+
+    /**
+     * Adds the taphold listener to open a dialog to remve the list
+     * 
+     * @param {num} id id for the li element
+     */
+    function AddTapholdListener(id) {
+        setTimeout(function () {
+            $$('#js-list-' + id).on('taphold', function () {
+                var title = GetListTitle(id);
+                f7.dialog.prompt("Would you like to remove `" + title + "`?",
+                                 "Remove list?",
+                                 function () {
+                                    RemoveList(id);
+                                 });
+            });
+        })
     }
 
     /**
      * Add a new list to the page
      * @param {string} name Name of the new list
      */
+    var gListId = 0;
     function AddNewList(name) {
         name = name.trim()
         if (name === "") {
             return;
         }
         var listContainer = document.getElementById('js-list-container');
-        var listHtml = `<li class="accordion-item">
+        var listHtml = `<li data-title="`+name+`" class="accordion-item" id="js-list-`+ gListId +`">
                             <a href="#" class="item-link item-content">
                                 <div class="item-inner">
                                     <div class="item-title">` + name + `</div>
@@ -111,6 +168,7 @@ var Lists = {};
                             </div>
                         </li>`
         listContainer.innerHTML += listHtml;
+        AddTapholdListener(gListId++);
         // Add to json data
         CreateList(name);
     }
@@ -128,7 +186,7 @@ var Lists = {};
         if (typeof(strikethrough) === "undefined") {
             strikethrough = false;
         }
-        value = inputEl.value.trim();
+        var value = inputEl.value.trim();
         if (value === "") {
             if (val == null) {
                 return;
@@ -136,12 +194,12 @@ var Lists = {};
                 value = val;
             }
         }
-        var listItem = `<li class="item-content" onclick="Lists.ToggleStrikethrough(this)" data-pre-strikethrough="`+ strikethrough +`">
+        var listItem = `<li class="item-content `+(strikethrough ? "li-strikethrough" : "")+`" onclick="Lists.ToggleStrikethrough(this)" data-strikethrough="`+ (strikethrough ? "true" : "false") +`">
                             <div class="item-inner">
                                 <div class="item-title">
                                     ` + value + `
                                 </div>
-                                <div data-list="`+list+`" data-value="`+value+`" class="item-after js-close-btn" style="display: none;" onclick="Lists.RemoveItem(this)">
+                                <div data-list="`+list+`" data-value="`+value+`" class="item-after js-close-btn" style="` + (strikethrough ? "": "display: none;") + `" onclick="Lists.RemoveItem(this)">
                                     <button class="button">
                                         <i class="icon f7-icons">close</i>
                                     </button>
@@ -184,17 +242,18 @@ var Lists = {};
             $$(listItem.getElementsByClassName('js-close-btn')[0]).show();
             // Add back to DOM at the bottom after modifying
             parent.appendChild(listItem);
-            ListContent[list][item].Strikethrough = true;
-            ListContent[list][item].Time = new Date();
+            ListContent[list]['items'][item].Strikethrough = true;
+            ListContent[list]['items'][item].Time = new Date();
         } else {
             listItem.setAttribute('data-strikethrough', false);
             listItem.classList.remove('li-strikethrough');
             $$(listItem.getElementsByClassName('js-close-btn')[0]).hide();
             // Add to top of list after input
             // There should always be [0] because the input field is there.
-            parent.getElementsByTagName('li')[0].after(listItem);
-            ListContent[list][item].Strikethrough = false;
-            ListContent[list][item].Time = new Date();
+            var li = parent.getElementsByTagName('li')[0];
+            li.parentNode.insertBefore(listItem, li.nextSibling);
+            ListContent[list]['items'][item].Strikethrough = false;
+            ListContent[list]['items'][item].Time = new Date();
         }
         Lists.PostList();
     }
@@ -202,7 +261,6 @@ var Lists = {};
     function GetElement(list, value) {
         item = document.querySelector('[data-list="' + list + '"][data-value="' + value + '"]')
         if (item) {
-            console.log(item.parentNode.parentNode);
             return item.parentNode.parentNode;
         }
         return null;
@@ -229,8 +287,8 @@ var Lists = {};
         // Remove from DOM
         item.parentNode.parentNode.remove();
         // Remove from JSON
-        ListContent[list][value].Removed = true;
-        ListContent[list][value].Time = new Date()
+        ListContent[list]['items'][value].Removed = true;
+        ListContent[list]['items'][value].Time = new Date();
         Lists.PostList();
     }
 
@@ -288,60 +346,92 @@ var Lists = {};
         }
         // Prevent calls to Add Lists from posting the list
         gSyncing = true;
-
+        console.log("Start looking here");
+        console.log(JSON.stringify(ListContent));
+        console.log(JSON.stringify(partnerLists));
         // Merge lists into local copy
         // Looping through each list
         Object.keys(partnerLists).forEach(function (list) {
-            // If list doesn't exist, create it.
-            if (!ListContent[list]) {
+            if (ListContent[list]) {
+                // List exists locally. Compare times
+                var lTime = new Date(ListContent[list].Time);
+                var pTime = new Date(partnerLists[list].Time);
+                if (lTime < pTime) {
+                    // Partner time is more recent. Use theirs
+                    if (partnerLists[list].Removed) {
+                        RemoveList(list);
+                        ListContent[list].Time = partnerLists[list].Time;
+                    }
+                    // If not removed, nothing else to do here.
+                }
+            }
+            // If the list does not exist locally and it has not been removed
+            // then add it
+            if (!ListContent[list] && !partnerLists[list].Removed) {
                 AddNewList(list);
+                ListContent[list].Time = partnerLists[list].Time;
+            } else if (!ListContent[list] && partnerLists[list].Removed) {
+                // Stay in sync even if it's been removed.
+                // but don't add to DOM
+                ListContent[list] = partnerLists[list];
             }
 
             // Now loop through list items
-            Object.keys(partnerLists[list]).forEach(function (item) {
+            Object.keys(partnerLists[list]['items']).forEach(function (item) {
                 // If item doesn't exist, add it
-                if (!ListContent[list][item]) {
-                    ListContent[list][item] = partnerLists[list][item]
+                if (!ListContent[list]['items'][item]) {
+                    // Still copy it over for now
+                    // TODO: Find when it's appropriate to remove these
+                    // Issue: I remove an item, so item is marked as removed
+                    //        I close and open lists, Item is now gone from ListContent
+                    //        I update a list, now the removed item is gone completely
+                    //        Partner syncs, they don't see that the item was removed because the last list I posted didn't have the removed attribute
                     // Only really add it if the item has not been removed
                     // Now it will never exist.
-                    if (!partnerLists[list][item].Removed) {
-                        var strikethrough = partnerLists[list][item].Strikethrough;
+                    console.log(JSON.stringify(partnerLists[list]['items'][item]))
+                    console.log(JSON.stringify(partnerLists[list]['items']));
+                    console.log("Failed on list: " + list + " and item: " + item);
+                    if (!partnerLists[list]['items'][item].Removed) {
+                        var strikethrough = partnerLists[list]['items'][item].Strikethrough;
                         Lists.AddListItem(list, item, strikethrough);
-                        ListContent[list][item].Time = partnerLists[list][item].Time; // AddListItem updates time, but we want whatever time was saved.
-                    } else {
-                        // Still copy it over for now
-                        // TODO: Find when it's appropriate to remove these
-                        // Issue: I remove an item, so item is marked as removed
-                        //        I close and open lists, Item is now gone from ListContent
-                        //        I update a list, now the removed item is gone completely
-                        //        Partner syncs, they don't see that the item was removed because the last list I posted didn't have the removed attribute
-                        ListContent[list][item].Time = partnerLists[list][item].Time;
                     }
+                    ListContent[list]['items'][item] = partnerLists[list]['items'][item]
+                    // alert("Adding Item: " + list + " Item: " + item + "\n" +
+                    //       "Partner: " + JSON.stringify(partnerLists[list][item]) +
+                    //       "Local:   " + JSON.stringify(ListContent[list][item]));
                 } else {
+                    // alert("Modifying: " + list + " Item: " + item + "\n" +
+                    //       "Partner: " + JSON.stringify(partnerLists[list][item]) + "\n" +
+                    //       "Local:   " + JSON.stringify(ListContent[list][item]));
                     // Item is already in DOM, need to
                     // Compare timestamps
-                    var partnerTime = new Date(partnerLists[list][item].Time);
-                    var localTime   = new Date(ListContent[list][item].Time);
+                    var partnerTime = new Date(partnerLists[list]['items'][item].Time);
+                    var localTime   = new Date(ListContent[list]['items'][item].Time);
                     if (partnerTime > localTime) {
-                        ListContent[list][item] = partnerLists[list][item];
-                        if (partnerLists[list][item].Strikethrough) {
+                        
+                        if (partnerLists[list]['items'][item].Removed != ListContent[list]['items'][item].Removed) {
+                            if (partnerLists[list]['items'][item].Removed) {
+                                Lists.RemoveItem(null, list, item);
+                            } else {
+                                Lists.AddListItem(list, item);
+                            }
+                        }
+                        
+                        if (!ListContent[list]['items'][item].Removed && (ListContent[list]['items'][item].Strikethrough != partnerLists[list]['items'][item].Strikethrough)) {
                             var el = GetElement(list, item);
                             Lists.ToggleStrikethrough(el);
                         }
-                        if (partnerLists[list][item].Removed) {
-                            Lists.RemoveItem(null, list, item);
-                        }
+                        // After updating, set object to partner's since above operations
+                        // may modify timestamp (and other potential properties)
+                        ListContent[list]['items'][item] = partnerLists[list]['items'][item];
+                    } else {
+                        // alert("Not modifying List: " + list + " Item: " + item + "\n" +
+                        //       "Partner: " + JSON.stringify(partnerLists[list][item]) + "\n" +
+                        //       "Local:   " + JSON.stringify(ListContent[list][item]));
                     }
                     // Else, local is more recent. Wait for partner to sync
                 }
             });
-        });
-
-        // Items added to DOM with strikethough attribute will have the pre-strikethrough set
-        // So we need to get the element to run the actual strikethough udpate
-        document.querySelectorAll('[data-pre-strikethrough=true]').forEach(function (li) {
-            Lists.ToggleStrikethrough(li);
-            li.setAttribute('data-pre-strikethrough', false);
         });
         gSyncing = false;
     }
