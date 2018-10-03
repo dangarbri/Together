@@ -29,7 +29,8 @@ var TYPING_PING_INTERVAL = 3000;
 var f7 = new Framework7({
     root: '#app',
     touch: {
-        tapHold: true //enable tap hold events
+        tapHold: true, //enable tap hold events
+        disableContextMenu: false
     },
     toast: {
         closeTimeout: 1500,
