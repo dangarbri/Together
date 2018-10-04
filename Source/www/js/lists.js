@@ -154,7 +154,7 @@ var Lists = {};
                                         <div class="item-inner">
                                             <div class="item-title" style="width: 100%;">
                                                 <div class="item-input-wrap">
-                                                <input id="js-` + name + `-input" type="text" name="text" placeholder="New List">
+                                                <input id="js-` + name + `-input" type="text" name="text" placeholder="New Item">
                                                 </div>
                                             </div>
                                             <div class="item-after">
