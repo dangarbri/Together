@@ -29,6 +29,22 @@ var Menu = {};
     }
 
     /**
+     * Controls what the back button does for each page
+     */
+    function HandleBackButton() {
+        var page = Menu.GetPage();
+        // If we're in lists, then pretend user just clicked the back button
+        if (page == Menu.Pages.LISTS) {
+            $$('#js-lists-back-btn').click();
+        }
+        // On any other page, just exit the app.
+        // Special page behavior should be added above 
+        else {
+            navigator.app.exitApp();
+        }
+    }
+
+    /**
      * Perform menu initialization.
      * Mainly button listeners
      * Close menu after link click
@@ -39,6 +55,7 @@ var Menu = {};
         Object.keys(Menu.Item).forEach(function (key) {
             Menu.Item[key].addEventListener('click', Menu.closeMenu);
         });
+        document.addEventListener("backbutton", HandleBackButton, false);
     };
 
     Menu.GetPage = function () {
