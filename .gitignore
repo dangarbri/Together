@@ -37,3 +37,4 @@ Source/platforms/android/.gradle/4.6/taskHistory/taskHistory.bin
 Source/platforms/android/.gradle/4.6/taskHistory/taskHistory.lock
 Source/platforms/android/app/src/main/AndroidManifest.xml
 Source/platforms/android/app/src/main/res/xml/config.xml
+.vscode
